@@ -4,6 +4,27 @@ from models import linear, mlp
 from datas import load_data
 
 
+def sequence_linear_runner():
+    """
+    the example runner for Sequential linear model
+    """
+    X = tf.constant([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+    y = tf.constant([[10.0], [20.0]])
+
+    model = linear.sequence_linear()
+
+    model.compile(loss='mean_squared_error', optimizer='SGD')
+
+    model.fit(X, y, epochs=100)
+
+    print(model.variables)
+    # array([[0.40425897],
+    #        [1.1903621],
+    #        [1.9764657]], dtype=float32)
+
+    return 0
+
+
 # TODO: try to abstract the call progress into a method
 def linear_runner():
     """
@@ -24,6 +45,11 @@ def linear_runner():
         optimizer.apply_gradients(grads_and_vars=zip(grads, model.variables))
 
     print(model.variables)
+
+    # array([[0.16730985],
+    #        [1.14391],
+    #        [2.1205118]], dtype=float32)
+    return 0
 
 
 def mlp_runner():
@@ -63,6 +89,7 @@ def mlp_runner():
         sparse_categorical_accuracy.update_state(y_true=data_loader.test_label[start_index: end_index], y_pred=y_pred)
 
     print("test accuracy: {}".format(sparse_categorical_accuracy.result()))
+    # 0.974
     return 0
 
 

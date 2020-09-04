@@ -25,3 +25,15 @@ class Linear(tf.keras.Model):
     def call(self, input):
         output = self.dense(input)
         return output
+
+
+def sequence_linear():
+    model = tf.keras.Sequential(
+        tf.keras.layers.Dense(
+            units=1,
+            activation=None,
+            kernel_initializer=tf.zeros_initializer(),
+            bias_initializer=tf.zeros_initializer()
+        )
+    )
+    return model
