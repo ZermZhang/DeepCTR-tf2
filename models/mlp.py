@@ -25,3 +25,16 @@ class MLP(tf.keras.Model):
         x = self.dense2(x)
         output = tf.nn.softmax(x)
         return output
+
+
+def sequence_mlp():
+
+    model = tf.keras.Sequential(
+        [
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(units=100, activation=tf.nn.relu),
+            tf.keras.layers.Dense(units=10),
+            tf.nn.softmax()
+        ]
+    )
+    return model

@@ -76,6 +76,35 @@ def linear_runner():
     return 0
 
 
+def sequence_mlp_runner():
+    """
+    the example runner for Sequential mlp model
+    """
+
+    num_epoches = 5
+    batch_size = 50
+    learning_rate = 0.001
+
+    # the initial for model AND datas
+    model = mlp.sequence_mlp()
+    data_loader = load_data.MNISTLoader()
+
+    # the initial for optimizer AND loss
+    optimizer_func = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+    def loss_func(y_true, y_pred): return tf.reduce_sum(tf.keras.losses.sparse_categorical_crossentropy(y_true=y_true, y_pred=y_pred))
+    model.compile(optimizer=optimizer_func, loss=loss_func, metrics=['sparse_categorical_accuracy'])
+
+    # training
+    model.fit(data_loader.train_data, data_loader.train_label, batch_size=batch_size, epochs=num_epoches)
+
+    # evaluate
+    model.evaluate(data_loader.test_data, data_loader.test_label, batch_size=batch_size)
+    # loss = 4.245840030318577
+    # accuracy = 0.9788
+
+    return 0
+
+
 def mlp_runner():
     """
     the example runner for mlp model
@@ -113,7 +142,8 @@ def mlp_runner():
         sparse_categorical_accuracy.update_state(y_true=data_loader.test_label[start_index: end_index], y_pred=y_pred)
 
     print("test accuracy: {}".format(sparse_categorical_accuracy.result()))
-    # 0.974
+    # loss = 3.7360587120056152
+    # accuracy = 0.9728999733924866
     return 0
 
 
