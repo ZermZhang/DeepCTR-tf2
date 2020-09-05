@@ -89,7 +89,7 @@ def sequence_mlp_runner():
     model = mlp.sequence_mlp()
     data_loader = load_data.MNISTLoader()
 
-    # the initial for optimizer AND loss
+    # the initial for optimizer AND loss AND metrics name
     optimizer_func = tf.keras.optimizers.Adam(learning_rate=learning_rate)
     def loss_func(y_true, y_pred): return tf.reduce_sum(tf.keras.losses.sparse_categorical_crossentropy(y_true=y_true, y_pred=y_pred))
     model.compile(optimizer=optimizer_func, loss=loss_func, metrics=['sparse_categorical_accuracy'])
