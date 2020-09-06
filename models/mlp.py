@@ -33,8 +33,7 @@ def sequence_mlp():
         [
             tf.keras.layers.Flatten(),
             tf.keras.layers.Dense(units=100, activation=tf.nn.relu),
-            tf.keras.layers.Dense(units=10),
-            tf.nn.softmax()
+            tf.keras.layers.Dense(units=10, activation=tf.nn.softmax)
         ]
     )
     return model

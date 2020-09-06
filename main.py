@@ -4,6 +4,11 @@ import tensorflow as tf
 
 from models import linear, mlp
 from datas import load_data
+from utils import config
+
+# 获取模型的相关配置
+CONFIG = config.Config("./conf/conf.yaml")
+CONFIG_TRAIN = CONFIG.model_config
 
 
 def sequence_linear_runner():
@@ -80,10 +85,11 @@ def sequence_mlp_runner():
     """
     the example runner for Sequential mlp model
     """
+    num_epoches = CONFIG_TRAIN.get('nnum_epoches', 3)
+    batch_size = CONFIG_TRAIN.get('batch_size', 100)
+    learning_rate = CONFIG_TRAIN.get('learning_rate', 0.01)
 
-    num_epoches = 5
-    batch_size = 50
-    learning_rate = 0.001
+    print("the model parameters:\n\tnum_epoches: {}\n\tbatch_size: {}\n\tlearning_rate: {}".format(num_epoches, batch_size, learning_rate))
 
     # the initial for model AND datas
     model = mlp.sequence_mlp()
@@ -148,4 +154,4 @@ def mlp_runner():
 
 
 if __name__ == '__main__':
-    mlp_runner()
+    sequence_mlp_runner()

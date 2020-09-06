@@ -1,0 +1,9 @@
+########################################################
+## the configure data for models
+########################################################
+
+model:
+    num_epoches: 5
+    batch_size: 50
+    learning_rate: 0.001
+    optimizer: Adam
