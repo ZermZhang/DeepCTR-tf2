@@ -10,6 +10,12 @@ from utils import config
 CONFIG = config.Config("./conf/conf.yaml")
 CONFIG_TRAIN = CONFIG.model_config
 
+num_epoches = CONFIG_TRAIN.get('nnum_epoches', 3)
+batch_size = CONFIG_TRAIN.get('batch_size', 100)
+learning_rate = CONFIG_TRAIN.get('learning_rate', 0.01)
+
+print("the model parameters:\n\tnum_epoches: {}\n\tbatch_size: {}\n\tlearning_rate: {}".format(num_epoches, batch_size, learning_rate))
+
 
 def sequence_linear_runner():
     """
@@ -85,11 +91,6 @@ def sequence_mlp_runner():
     """
     the example runner for Sequential mlp model
     """
-    num_epoches = CONFIG_TRAIN.get('nnum_epoches', 3)
-    batch_size = CONFIG_TRAIN.get('batch_size', 100)
-    learning_rate = CONFIG_TRAIN.get('learning_rate', 0.01)
-
-    print("the model parameters:\n\tnum_epoches: {}\n\tbatch_size: {}\n\tlearning_rate: {}".format(num_epoches, batch_size, learning_rate))
 
     # the initial for model AND datas
     model = mlp.sequence_mlp()
@@ -115,11 +116,6 @@ def mlp_runner():
     """
     the example runner for mlp model
     """
-    # TODO: gather the config parameters into a configure file
-    num_epoches = 5
-    batch_size = 50
-    learning_rate = 0.001
-
     model = mlp.MLP()
     data_loader = load_data.MNISTLoader()
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
@@ -154,4 +150,4 @@ def mlp_runner():
 
 
 if __name__ == '__main__':
-    sequence_mlp_runner()
+    mlp_runner()
