@@ -35,12 +35,12 @@ def call_backup(x=None, y=None, optimizer_func=None, epochs=100, loss_func=None)
     return _call_backup
 
 
-def model_trainer(datas, model, loss, optimizer, **kwargs):
+def model_trainer(datas, model, loss_func, optimizer_func, **kwargs):
     """
     :param datas: the data loader can get train AND eval datas
     :param model: the tf model
-    :param loss:  the loss function for model
-    :param optimizer: the optimizer for model
+    :param loss_func:  the loss function for model
+    :param optimizer_func: the optimizer for model
     :param kwargs:
     :return:
     """
@@ -53,10 +53,10 @@ def model_trainer(datas, model, loss, optimizer, **kwargs):
         features, labels = datas.get_batch(kwargs['batch_size'])
         with tf.GradientTape() as tape:
             lables_pred = model(features)
-            loss = loss(labels, lables_pred)
+            loss = loss_func(labels, lables_pred)
             print("batch {batch_index}: loss {loss}".format(batch_index=batch_index, loss=loss))
 
         grads = tape.gradient(loss, model.variables)
-        optimizer.apply_gradients(grads_and_vars=zip(grads, model.variables))
+        optimizer_func.apply_gradients(grads_and_vars=zip(grads, model.variables))
 
     return model

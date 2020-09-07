@@ -75,7 +75,9 @@ def sequence_mlp_runner():
 
     # the initial for optimizer AND loss AND metrics name
     optimizer_func = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+
     def loss_func(y_true, y_pred): return tf.reduce_sum(tf.keras.losses.sparse_categorical_crossentropy(y_true=y_true, y_pred=y_pred))
+
     model.compile(optimizer=optimizer_func, loss=loss_func, metrics=['sparse_categorical_accuracy'])
 
     # training
@@ -126,5 +128,34 @@ def mlp_runner():
     return 0
 
 
+def mlp_runner_utils():
+    """
+    the example runner for mlp model use the runner utils function
+    """
+    model = mlp.MLP()
+    data_loader = load_data.MNISTLoader()
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+
+    def loss(y_true, y_predict): return tf.reduce_sum(tf.keras.losses.sparse_categorical_crossentropy(y_true=y_true, y_pred=y_predict))
+
+    # training
+    model = runner.model_trainer(data_loader, model, loss, optimizer,
+                                 batch_size=batch_size, num_epoches=num_epoches)
+
+    # evaluate
+    sparse_categorical_accuracy = tf.keras.metrics.SparseCategoricalAccuracy()
+    num_batches = int(data_loader.num_test_data // batch_size)
+
+    for batch_index in range(num_batches):
+        start_index, end_index = batch_index * batch_size, (batch_index + 1) * batch_size
+        y_pred = model.predict(data_loader.test_data[start_index: end_index])
+        sparse_categorical_accuracy.update_state(y_true=data_loader.test_label[start_index: end_index], y_pred=y_pred)
+
+    print("test accuracy: {}".format(sparse_categorical_accuracy.result()))
+    # loss = 3.7360587120056152
+    # accuracy = 0.9728999733924866
+    return 0
+
+
 if __name__ == '__main__':
-    mlp_runner()
+    mlp_runner_utils()
