@@ -4,7 +4,7 @@ import tensorflow as tf
 
 from models import linear, mlp
 from datas import load_data
-from utils import config
+from utils import config, runner
 
 # 获取模型的相关配置
 CONFIG = config.Config("./conf/conf.yaml")
@@ -36,29 +36,6 @@ def sequence_linear_runner():
     #        [1.9764657]], dtype=float32)
 
     return 0
-
-
-# TODO: too many inputs for wrapper.
-# TODO: The ideal wrapper's inputs should be the must inputs, likes optimizer, epochs, loss_func···
-# TODO: AND fit the data after get the compiled model
-def call_backup(x=None, y=None, optimizer_func=None, epochs=100, loss_func=None):
-    """
-    wrapper for model build function
-    run the model when call the model build function
-    """
-    def _call_backup(model_func):
-        def _wrapper(*args, **kwargs):
-            model = model_func(*args, **kwargs)
-            for i in range(epochs):
-                with tf.GradientTape() as tape:
-                    y_pred = model(x)
-                    loss = loss_func(y_pred, y)
-
-                grads = tape.gradient(loss, model.variables)
-                optimizer_func.apply_gradients(grads_and_vars=zip(grads, model.variables))
-            return model
-        return _wrapper
-    return _call_backup
 
 
 def linear_runner():
