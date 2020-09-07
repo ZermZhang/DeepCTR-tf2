@@ -13,7 +13,6 @@ import os
 import yaml
 
 
-# TODO: implementation the simplest config parsing
 class Config(object):
     def __init__(self, config_path):
         abs_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), config_path)
