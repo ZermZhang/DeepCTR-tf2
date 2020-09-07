@@ -10,7 +10,7 @@ from utils import config, runner
 CONFIG = config.Config("./conf/conf.yaml")
 CONFIG_TRAIN = CONFIG.model_config
 
-num_epoches = CONFIG_TRAIN.get('nnum_epoches', 3)
+num_epoches = CONFIG_TRAIN.get('num_epoches', 3)
 batch_size = CONFIG_TRAIN.get('batch_size', 100)
 learning_rate = CONFIG_TRAIN.get('learning_rate', 0.01)
 
@@ -143,17 +143,14 @@ def mlp_runner_utils():
                                  batch_size=batch_size, num_epoches=num_epoches)
 
     # evaluate
-    sparse_categorical_accuracy = tf.keras.metrics.SparseCategoricalAccuracy()
-    num_batches = int(data_loader.num_test_data // batch_size)
+    metrics = ['SparseCategoricalAccuracy', 'SparseCategoricalCrossentropy']
+    results = runner.model_evaluate(data_loader, model, metrics, batch_size=batch_size)
 
-    for batch_index in range(num_batches):
-        start_index, end_index = batch_index * batch_size, (batch_index + 1) * batch_size
-        y_pred = model.predict(data_loader.test_data[start_index: end_index])
-        sparse_categorical_accuracy.update_state(y_true=data_loader.test_label[start_index: end_index], y_pred=y_pred)
-
-    print("test accuracy: {}".format(sparse_categorical_accuracy.result()))
-    # loss = 3.7360587120056152
-    # accuracy = 0.9728999733924866
+    for (name, result) in zip(metrics, results):
+        print("the {} evaluate result: {}".format(name, result.result()))
+    # batch 5999: loss 1.6622872352600098
+    # the SparseCategoricalAccuracy evaluate result: 0.9735999703407288
+    # the SparseCategoricalCrossentropy evaluate result: 0.09004498273134232
     return 0
 
 

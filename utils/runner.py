@@ -60,3 +60,26 @@ def model_trainer(datas, model, loss_func, optimizer_func, **kwargs):
         optimizer_func.apply_gradients(grads_and_vars=zip(grads, model.variables))
 
     return model
+
+
+def model_evaluate(datas, model, metrics, **kwargs):
+    """
+    :param datas: the data loader can get eval datas
+    :param model: the tf model
+    :param metrics: the list for metrics
+    :param kwargs:
+    :return:
+    """
+    num_batches = int(datas.num_test_data // kwargs['batch_size'])
+
+    metric_funcs = [tf.keras.metrics.get(metric) for metric in metrics]
+
+    results = []
+    for metric in metric_funcs:
+        for batch_index in range(num_batches):
+            start_index, end_index = batch_index * kwargs['batch_size'], (batch_index + 1) * kwargs['batch_size']
+            y_pred = model.predict(datas.test_data[start_index: end_index])
+            metric.update_state(y_true=datas.test_label[start_index: end_index], y_pred=y_pred)
+        results.append(metric)
+
+    return results
