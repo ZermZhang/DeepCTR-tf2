@@ -2,7 +2,7 @@ from functools import wraps
 
 import tensorflow as tf
 
-from models import linear, mlp
+from models import linear, mlp, cnn
 from datas import load_data
 from utils import config, runner
 
@@ -139,8 +139,7 @@ def mlp_runner_utils():
     def loss(y_true, y_predict): return tf.reduce_sum(tf.keras.losses.sparse_categorical_crossentropy(y_true=y_true, y_pred=y_predict))
 
     # training
-    model = runner.model_trainer(data_loader, model, loss, optimizer,
-                                 batch_size=batch_size, num_epoches=num_epoches)
+    model = runner.model_train(data_loader, model, loss, optimizer, batch_size=batch_size, num_epoches=num_epoches)
 
     # evaluate
     metrics = ['SparseCategoricalAccuracy', 'SparseCategoricalCrossentropy']
@@ -154,5 +153,33 @@ def mlp_runner_utils():
     return 0
 
 
+def cnn_runner():
+    """
+    the example runner for cnn model
+    """
+    model = cnn.CNN()
+    data_loader = load_data.MNISTLoader()
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+
+    import tensorflow_datasets as tfds
+
+    dataset = tfds.load("tf_flowers", split=tfds.Split.TRAIN, as_supervised=True)
+    dataset = dataset.map(lambda img, label: (tf.image.resize(img, (224, 224)) / 255.0, label)).shuffle(1024).batch(batch_size)
+    model = tf.keras.applications.MobileNetV2(weights=None, classes=5)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+    for e in range(num_epoches):
+        for images, labels in dataset:
+            with tf.GradientTape() as tape:
+                labels_pred = model(images, training=True)
+                loss = tf.keras.losses.sparse_categorical_crossentropy(y_true=labels, y_pred=labels_pred)
+                loss = tf.reduce_mean(loss)
+                print("loss %f" % loss.numpy())
+            grads = tape.gradient(loss, model.trainable_variables)
+            optimizer.apply_gradients(grads_and_vars=zip(grads, model.trainable_variables))
+        print(labels_pred)
+
+    return 0
+
+
 if __name__ == '__main__':
-    mlp_runner_utils()
+    cnn_runner()

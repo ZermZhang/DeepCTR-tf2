@@ -35,7 +35,7 @@ def call_backup(x=None, y=None, optimizer_func=None, epochs=100, loss_func=None)
     return _call_backup
 
 
-def model_trainer(datas, model, loss_func, optimizer_func, **kwargs):
+def model_train(datas, model, loss_func, optimizer_func, **kwargs):
     """
     :param datas: the data loader can get train AND eval datas
     :param model: the tf model
