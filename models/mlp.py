@@ -36,7 +36,7 @@ class DNN(tf.keras.Model):
         self.flatten = tf.keras.layers.Flatten()
         self.hidden_layers = []
         for unit_num in self.deep_params['units']:
-            self.denses.append(tf.keras.layers.Dense(units=unit_num, activation=self.activation))
+            self.hidden_layers.append(tf.keras.layers.Dense(units=unit_num, activation=self.activation))
         self.output_layers = tf.keras.layers.Dense(units=self.classes, activation='softmax')
 
     def call(self, inputs):

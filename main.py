@@ -153,6 +153,34 @@ def mlp_runner_utils():
     return 0
 
 
+def dnn_runner_utils():
+    """
+    the examples runner for DNN model use the runner utils function
+    """
+    model = mlp.DNN(CONFIG)
+    data_loader = load_data.MNISTLoader()
+    # TODO: optimizer func AND loss func should be aggregated into an utils py-file
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+
+    def loss(y_true, y_pred): return tf.reduce_sum(tf.keras.losses.sparse_categorical_crossentropy(y_true=y_true, y_pred=y_pred))
+
+    # training
+    model = runner.model_train(data_loader, model, loss, optimizer, batch_size=batch_size, num_epoches=num_epoches)
+
+    # evaluate
+    metrics = ['SparseCategoricalAccuracy', 'SparseCategoricalCrossentropy']
+    results = runner.model_evaluate(data_loader, model, metrics, batch_size=batch_size)
+
+    for (name, result) in zip(metrics, results):
+        print("the {} evaluate result: {}".format(name, result.result()))
+
+    # batch 5999: loss 3.444500207901001
+    # the SparseCategoricalAccuracy evaluate result: 0.9742000102996826
+    # the SparseCategoricalCrossentropy evaluate result: 0.08227363228797913
+
+    return 0
+
+
 def cnn_runner():
     """
     the example runner for cnn model
@@ -182,4 +210,4 @@ def cnn_runner():
 
 
 if __name__ == '__main__':
-    cnn_runner()
+    dnn_runner_utils()
