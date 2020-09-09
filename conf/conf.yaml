@@ -7,3 +7,7 @@ model:
     batch_size: 50
     learning_rate: 0.001
     optimizer: Adam
+    classes: 10
+    deep:
+        units: [100]
+        activation: relu

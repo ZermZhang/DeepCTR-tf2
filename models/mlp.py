@@ -27,6 +27,26 @@ class MLP(tf.keras.Model):
         return output
 
 
+class DNN(tf.keras.Model):
+    def __init__(self, config):
+        super(DNN, self).__init__()
+        self.classes = config.model_config['classes']
+        self.deep_params = config.deep_model_config
+        self.activation = tf.keras.activations.get(self.deep_params['activation'])
+        self.flatten = tf.keras.layers.Flatten()
+        self.hidden_layers = []
+        for unit_num in self.deep_params['units']:
+            self.denses.append(tf.keras.layers.Dense(units=unit_num, activation=self.activation))
+        self.output_layers = tf.keras.layers.Dense(units=self.classes, activation='softmax')
+
+    def call(self, inputs):
+        x = self.flatten(inputs)
+        for hidden_layer in self.hidden_layers:
+            x = hidden_layer(x)
+        output = self.output_layers(x)
+        return output
+
+
 def sequence_mlp():
 
     model = tf.keras.Sequential(

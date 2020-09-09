@@ -32,6 +32,10 @@ class Config(object):
     def model_config(self):
         return self.config.get('model', {})
 
+    @property
+    def deep_model_config(self):
+        return self.model_config.get('deep', {})
+
 
 if __name__ == "__main__":
 
