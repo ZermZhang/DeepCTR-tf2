@@ -2,7 +2,7 @@ from functools import wraps
 
 import tensorflow as tf
 
-from models import linear, mlp, cnn
+from models import linear, mlp, cnn, wide_deep
 from datas import load_data
 from utils import config, runner, layers
 
@@ -17,6 +17,7 @@ learning_rate = CONFIG_TRAIN.get('learning_rate', 0.01)
 print("the model parameters:\n\tnum_epoches: {}\n\tbatch_size: {}\n\tlearning_rate: {}".format(num_epoches, batch_size, learning_rate))
 
 
+# TODO: 调整各个模型测试用例的位置，保持main的整洁
 def sequence_linear_runner():
     """
     the example runner for Sequential linear model
@@ -209,4 +210,4 @@ def cnn_runner():
 
 
 if __name__ == '__main__':
-    dnn_runner_utils()
+    wide_deep.tester(CONFIG)
