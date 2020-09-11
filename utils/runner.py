@@ -44,7 +44,6 @@ def model_train(datas, model, loss_func, optimizer_func, **kwargs):
     :param kwargs:
     :return:
     """
-    # TODO: waiting Compatible with the normal data format
     # train_data, test_data = datas.get("train", None), datas.get("test", None) if isinstance(datas, dict) else (None, None)
     # train_data_num = len(train_data) if train_data is not None else datas.num_train_data
 

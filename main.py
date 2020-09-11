@@ -4,7 +4,7 @@ import tensorflow as tf
 
 from models import linear, mlp, cnn
 from datas import load_data
-from utils import config, runner
+from utils import config, runner, layers
 
 # 获取模型的相关配置
 CONFIG = config.Config("./conf/conf.yaml")
@@ -159,13 +159,12 @@ def dnn_runner_utils():
     """
     model = mlp.DNN(CONFIG)
     data_loader = load_data.MNISTLoader()
-    # TODO: optimizer func AND loss func should be aggregated into an utils py-file
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
-    def loss(y_true, y_pred): return tf.reduce_sum(tf.keras.losses.sparse_categorical_crossentropy(y_true=y_true, y_pred=y_pred))
+    loss_func = layers.LossesFunc('reduce_sum_sparse_categorical_crossentropy')
 
     # training
-    model = runner.model_train(data_loader, model, loss, optimizer, batch_size=batch_size, num_epoches=num_epoches)
+    model = runner.model_train(data_loader, model, loss_func.loss, optimizer, batch_size=batch_size, num_epoches=num_epoches)
 
     # evaluate
     metrics = ['SparseCategoricalAccuracy', 'SparseCategoricalCrossentropy']
