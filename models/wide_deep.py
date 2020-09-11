@@ -46,6 +46,7 @@ def tester(CONFIG):
     for batch_index in range(num_batches):
         features, lables = data_loader.get_batch(batch_size)
         with tf.GradientTape() as tape:
+            # TODO: 这里有问题
             wide_lables_pred, deep_lables_pred = model(features)
             wide_loss = loss_func(lables, wide_lables_pred)
             deep_loss = loss_func(lables, deep_lables_pred)
