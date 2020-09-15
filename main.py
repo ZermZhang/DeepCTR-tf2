@@ -213,9 +213,13 @@ def sequence_lr_runner():
     for (name, result) in zip(metrics, results):
         print("the {} evaluate result: {}".format(name, result.result()))
 
+    # batch 49999: loss 0.5861628651618958
+    # the SparseCategoricalAccuracy evaluate result: 0.9217687249183655
+    # the SparseCategoricalCrossentropy evaluate result: 0.2908824384212494
+
     return 0
 
 
 if __name__ == '__main__':
     # wide_deep.tester(CONFIG)
-    linear_runner()
+    sequence_lr_runner()
