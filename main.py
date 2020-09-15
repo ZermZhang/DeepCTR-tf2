@@ -22,16 +22,19 @@ def sequence_linear_runner():
     """
     the example runner for Sequential linear model
     """
-    X = tf.constant([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
-    y = tf.constant([[10.0], [20.0]])
+    # X = tf.constant([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+    # y = tf.constant([[10.0], [20.0]])
 
     model = linear.sequence_linear()
+    data_loader = load_data.MNISTLoader()
 
     model.compile(loss='mean_squared_error', optimizer='SGD')
 
-    model.fit(X, y, epochs=100)
+    model.fit(data_loader.train_data, data_loader.train_label,
+              batch_size=batch_size, epochs=num_epoches)
 
-    print(model.variables)
+    model.evaluate(data_loader.test_data, data_loader.test_label, batch_size=batch_size)
+
     # array([[0.40425897],
     #        [1.1903621],
     #        [1.9764657]], dtype=float32)
@@ -210,4 +213,5 @@ def cnn_runner():
 
 
 if __name__ == '__main__':
-    wide_deep.tester(CONFIG)
+    # wide_deep.tester(CONFIG)
+    sequence_linear_runner()
