@@ -196,7 +196,7 @@ def sequence_lr_runner():
     # X = tf.constant([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
     # y = tf.constant([[10.0], [20.0]])
 
-    model = lr.Lr()
+    model = lr.Lr(CONFIG)
     data_loader = load_data.MNISTLoader()
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)

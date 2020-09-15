@@ -4,10 +4,13 @@
 
 model:
     num_epoches: 5
-    batch_size: 6
+    batch_size: 128
     learning_rate: 0.001
     optimizer: Adam
     classes: 10
     deep:
         units: [100]
         activation: relu
+
+    wide:
+        activation: softmax

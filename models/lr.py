@@ -12,13 +12,30 @@
 import tensorflow as tf
 
 
+def classes_activation_check(classes, activation):
+    if classes == 2 and activation != 'sigmoid':
+        raise Exception("{activation} not supported for {classes} classify".format(
+            activation=activation, classes=classes
+        ))
+    if classes > 2 and activation == 'sigmoid':
+        raise Exception("{actionvation} not supported for {classes} classify".format(
+            actionvation=activation, classes=classes
+        ))
+
+    return 0
+
+
 class Lr(tf.keras.Model):
-    def __init__(self):
+    def __init__(self, config):
         super().__init__()
+        self.classes = config.model_config['classes']
+        self.wide_params = config.wide_model_config
+        self.activation = tf.keras.activations.get(self.wide_params['activation'])
+        classes_activation_check(self.classes, self.activation)
         self.flatten = tf.keras.layers.Flatten()
         self.dense = tf.keras.layers.Dense(
-            units=10,
-            activation=tf.nn.softmax,
+            units=self.classes,
+            activation=self.activation,
             kernel_initializer=tf.zeros_initializer(),
             bias_initializer=tf.zeros_initializer()
         )
@@ -29,13 +46,20 @@ class Lr(tf.keras.Model):
         return output
 
 
-def sequence_lr():
+def sequence_lr(config):
+    classes = config.model_config['classes']
+    wide_params = config.wide_model_config
+    activation = tf.keras.activations.get(wide_params['activation'])
+    classes_activation_check(classes, activation)
     model = tf.keras.Sequential(
-        tf.keras.layers.Dense(
-            units=10,
-            activation=tf.nn.softmax,
-            kernel_initializer=tf.zeros_initializer(),
-            bias_initializer=tf.zeros_initializer()
-        )
+        [
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(
+                units=classes,
+                activation=activation,
+                kernel_initializer=tf.zeros_initializer(),
+                bias_initializer=tf.zeros_initializer()
+            )
+        ]
     )
     return model
