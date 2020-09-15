@@ -11,18 +11,7 @@
 
 import tensorflow as tf
 
-
-def classes_activation_check(classes, activation):
-    if classes == 2 and activation != 'sigmoid':
-        raise Exception("{activation} not supported for {classes} classify".format(
-            activation=activation, classes=classes
-        ))
-    if classes > 2 and activation == 'sigmoid':
-        raise Exception("{actionvation} not supported for {classes} classify".format(
-            actionvation=activation, classes=classes
-        ))
-
-    return 0
+from utils.model_utils import classes_activation_check
 
 
 class Lr(tf.keras.Model):
