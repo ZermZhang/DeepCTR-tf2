@@ -2,7 +2,7 @@ from functools import wraps
 
 import tensorflow as tf
 
-from models import linear, mlp, cnn, wide_deep
+from models import linear, mlp, cnn, wide_deep, lr
 from datas import load_data
 from utils import config, runner, layers
 
@@ -18,30 +18,6 @@ print("the model parameters:\n\tnum_epoches: {}\n\tbatch_size: {}\n\tlearning_ra
 
 
 # TODO: 调整各个模型测试用例的位置，保持main的整洁
-def sequence_linear_runner():
-    """
-    the example runner for Sequential linear model
-    """
-    # X = tf.constant([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
-    # y = tf.constant([[10.0], [20.0]])
-
-    model = linear.sequence_linear()
-    data_loader = load_data.MNISTLoader()
-
-    model.compile(loss='mean_squared_error', optimizer='SGD')
-
-    model.fit(data_loader.train_data, data_loader.train_label,
-              batch_size=batch_size, epochs=num_epoches)
-
-    model.evaluate(data_loader.test_data, data_loader.test_label, batch_size=batch_size)
-
-    # array([[0.40425897],
-    #        [1.1903621],
-    #        [1.9764657]], dtype=float32)
-
-    return 0
-
-
 def linear_runner():
     """
     the example runner for linear model
@@ -49,7 +25,8 @@ def linear_runner():
     X = tf.constant([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
     y = tf.constant([[10.0], [20.0]])
 
-    model = linear.Linear()
+    # model = linear.Linear()
+    model = lr.Lr()
     optimizer = tf.keras.optimizers.SGD(learning_rate=0.01)
 
     for i in range(100):
@@ -212,6 +189,33 @@ def cnn_runner():
     return 0
 
 
+def sequence_lr_runner():
+    """
+    the example runner for Sequential linear model
+    """
+    # X = tf.constant([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+    # y = tf.constant([[10.0], [20.0]])
+
+    model = lr.Lr()
+    data_loader = load_data.MNISTLoader()
+
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+
+    loss_func = layers.LossesFunc('reduce_sum_sparse_categorical_crossentropy')
+
+    # training
+    model = runner.model_train(data_loader, model, loss_func.loss, optimizer, batch_size=batch_size, num_epoches=num_epoches)
+
+    # evaluate
+    metrics = ['SparseCategoricalAccuracy', 'SparseCategoricalCrossentropy']
+    results = runner.model_evaluate(data_loader, model, metrics, batch_size=batch_size)
+
+    for (name, result) in zip(metrics, results):
+        print("the {} evaluate result: {}".format(name, result.result()))
+
+    return 0
+
+
 if __name__ == '__main__':
     # wide_deep.tester(CONFIG)
-    sequence_linear_runner()
+    linear_runner()

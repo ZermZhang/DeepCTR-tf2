@@ -16,7 +16,7 @@ class Lr(tf.keras.Model):
     def __init__(self):
         super().__init__()
         self.dense = tf.keras.layers.Dense(
-            units=1,
+            units=10,
             activation=tf.nn.sigmoid,
             kernel_initializer=tf.zeros_initializer(),
             bias_initializer=tf.zeros_initializer()
@@ -30,7 +30,7 @@ class Lr(tf.keras.Model):
 def sequence_lr():
     model = tf.keras.Sequential(
         tf.keras.layers.Dense(
-            units=1,
+            units=10,
             activation=tf.nn.sigmoid,
             kernel_initializer=tf.zeros_initializer(),
             bias_initializer=tf.zeros_initializer()
