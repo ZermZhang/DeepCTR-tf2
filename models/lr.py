@@ -6,7 +6,7 @@
 @Modify Time    : 2020/9/15 08:11     
 @Author         : zermzhang
 @version        : 1.0
-@Desciption     : 
+@Desciption     : the lr model
 """
 
 import tensorflow as tf
