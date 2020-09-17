@@ -12,21 +12,64 @@
 
 import tensorflow as tf
 
-from models import linear, mlp
+from models import lr, mlp
 from datas import load_data
-from utils import config, runner, layers
+from utils import runner, layers
+from utils.model_utils import classes_activation_check
+
+
+class Wide(tf.keras.Model):
+    def __init__(self, config):
+        super().__init__()
+        self.classes = config.model_config['classes']
+        self.wide_params = config.wide_model_config
+        self.activation = tf.keras.activations.get(self.wide_params['activation'])
+        classes_activation_check(self.classes, self.activation)
+        self.flatten = tf.keras.layers.Flatten()
+        self.dense = tf.keras.layers.Dense(
+            units=self.classes,
+            activation=self.activation,
+            kernel_initializer=tf.zeros_initializer(),
+            bias_initializer=tf.zeros_initializer()
+        )
+
+    def call(self, inputs):
+        x = self.flatten(inputs)
+        return x
+
+
+class Deep(tf.keras.Model):
+    def __init__(self, config):
+        super().__init__()
+        self.classes = config.model_config['classes']
+        self.deep_params = config.deep_model_config
+        self.activation = tf.keras.activations.get(self.deep_params['activation'])
+        self.flatten = tf.keras.layers.Flatten()
+        self.hidden_layers = []
+        for unit_num in self.deep_params['units']:
+            self.hidden_layers.append(tf.keras.layers.Dense(units=unit_num, activation=self.activation))
+        self.output_layers = tf.keras.layers.Dense(units=self.classes, activation='softmax')
+
+    def call(self, inputs):
+        x = self.flatten(inputs)
+        for hidden_layer in self.hidden_layers:
+            x = hidden_layer(x)
+        return x
 
 
 class WideAndDeep(tf.keras.Model):
     def __init__(self, config):
         super().__init__()
-        self.linear = linear.Linear()
-        self.dnn = mlp.DNN(config)
+        self.classes = config.model_config['classes']
+        self.wide = Wide(config)
+        self.deep = Deep(config)
+        self._output_layers = tf.keras.layers.Dense(units=self.classes, activation='softmax')
 
     def call(self, input):
-        linear_output = self.linear(input)
-        dnn_output = self.dnn(input)
-        return linear_output, dnn_output
+        wide_last = self.wide(input)
+        deep_last = self.deep(input)
+        output = self._output_layers(tf.concat([wide_last, deep_last], axis=-1))
+        return output
 
 
 def tester(CONFIG):
@@ -42,19 +85,7 @@ def tester(CONFIG):
     loss_func = layers.LossesFunc('reduce_sum_sparse_categorical_crossentropy').loss
 
     # training
-    num_batches = int(data_loader.num_train_data // batch_size * num_epoches)
-    for batch_index in range(num_batches):
-        features, lables = data_loader.get_batch(batch_size)
-        with tf.GradientTape() as tape:
-            # TODO: 这里有问题
-            wide_lables_pred, deep_lables_pred = model(features)
-            wide_loss = loss_func(lables, wide_lables_pred)
-            deep_loss = loss_func(lables, deep_lables_pred)
-            loss = wide_loss + deep_loss
-            print("batch {batch_index}: loss {loss}".format(batch_index=batch_index, loss=loss))
-
-        grads = tape.gradient(loss, model.variables)
-        optimizer.apply_gradients(grads_and_vars=zip(grads, model.variables))
+    model = runner.model_train(data_loader, model, loss_func, optimizer, batch_size=batch_size, num_epoches=num_epoches)
 
     # evaluate
     metrics = ['SparseCategoricalAccuracy', 'SparseCategoricalCrossentropy']
@@ -62,3 +93,8 @@ def tester(CONFIG):
 
     for (name, result) in zip(metrics, results):
         print("the {} evaluate result: {}".format(name, result.result()))
+
+    # batch 2339: loss 15.38129997253418
+    # the SparseCategoricalAccuracy evaluate result: 0.9689503312110901
+    # the SparseCategoricalCrossentropy evaluate result: 0.10526901483535767
+    return 0

@@ -221,5 +221,4 @@ def sequence_lr_runner():
 
 
 if __name__ == '__main__':
-    # wide_deep.tester(CONFIG)
-    sequence_lr_runner()
+    wide_deep.tester(CONFIG)
