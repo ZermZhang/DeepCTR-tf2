@@ -94,7 +94,7 @@ def tester(CONFIG):
     for (name, result) in zip(metrics, results):
         print("the {} evaluate result: {}".format(name, result.result()))
 
-    # batch 2339: loss 15.38129997253418
-    # the SparseCategoricalAccuracy evaluate result: 0.9689503312110901
-    # the SparseCategoricalCrossentropy evaluate result: 0.10526901483535767
+    # batch 7019: loss 1.9387052059173584
+    # the SparseCategoricalAccuracy evaluate result: 0.9782652258872986
+    # the SparseCategoricalCrossentropy evaluate result: 0.07465799152851105
     return 0

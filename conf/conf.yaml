@@ -3,7 +3,7 @@
 ########################################################
 
 model:
-    num_epoches: 5
+    num_epoches: 15
     batch_size: 128
     learning_rate: 0.001
     optimizer: Adam
