@@ -2,7 +2,7 @@ from functools import wraps
 
 import tensorflow as tf
 
-from models import linear, mlp, cnn, wide_deep, lr
+from models import linear, mlp, cnn, wide_deep, lr, rnn
 from datas import load_data
 from utils import config, runner, layers
 
@@ -221,4 +221,4 @@ def sequence_lr_runner():
 
 
 if __name__ == '__main__':
-    wide_deep.tester(CONFIG)
+    rnn.tester(CONFIG)

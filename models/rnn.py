@@ -8,7 +8,9 @@
 @version        : 1.0
 @Desciption     : the rnn model
 """
+import numpy as np
 import tensorflow as tf
+
 from datas import load_data
 
 
@@ -32,6 +34,13 @@ class RNN(tf.keras.Model):
         else:
             return tf.nn.softmax(logits)
 
+    def predict(self, inputs, temperature=1.):
+        batch_size, _ = tf.shape(inputs)
+        logits = self(inputs, from_logits=True)
+        prob = tf.nn.softmax(logits / temperature).numpy()
+        return np.array([np.random.choice(self.num_chars, p=prob[i, :])
+                         for i in range(batch_size.numpy())])
+
 
 def tester(CONFIG):
     config_train = CONFIG.model_config
@@ -44,7 +53,7 @@ def tester(CONFIG):
 
     data_loader = load_data.RnnDataLoader()
     model = RNN(num_chars=len(data_loader.chars), batch_size=batch_size, seq_length=seq_length)
-    optimizer = tf.keras.optimizers.get(optimizer)(learning_rate=learning_rate)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
     for batch_index in range(num_epoches):
         X, y = data_loader.get_batch(seq_length=seq_length, batch_size=batch_size)
@@ -57,4 +66,13 @@ def tester(CONFIG):
         grads = tape.gradient(loss, model.variables)
         optimizer.apply_gradients(grads_and_vars=zip(grads, model.variables))
 
+    X_, _ = data_loader.get_batch(seq_length, 1)
+    for diversity in [0.2, 0.5, 1.0, 1.2]:
+        X = X_
+        print('diversity: {}'.format(diversity))
+        for t in range(400):
+            y_pred = model.predict(X, diversity)
+            print(data_loader.indices_char[y_pred[0]], end='', flush=True)
+            X = np.concatenate([X[:, 1:], np.expand_dims(y_pred, axis=1)], axis=1)
+        print("\n")
     return 0
