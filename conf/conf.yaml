@@ -3,14 +3,19 @@
 ########################################################
 
 model:
-    num_epoches: 1000
+    num_episodes: 500
+    num_exploration_episodes: 100
+    max_len_episode: 1000
     seq_length: 40
-    batch_size: 50
+    batch_size: 32
     learning_rate: 0.001
+    gamma: 1.0
+    initial_epsilon: 1.0
+    final_epsilon: 0.01
     optimizer: Adam
-    classes: 10
+    classes: 2
     deep:
-        units: [100]
+        units: [24, 24]
         activation: relu
 
     wide:
