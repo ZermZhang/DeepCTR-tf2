@@ -4,7 +4,7 @@ import tensorflow as tf
 
 from models import linear, mlp, cnn, wide_deep, lr, rnn, drl
 from datas import load_data
-from utils import config, runner, layers
+from utils import config, runner, custom_layers, custom_losses
 
 # 获取模型的相关配置
 CONFIG = config.Config("./conf/conf.yaml")
@@ -142,7 +142,7 @@ def dnn_runner_utils():
     data_loader = load_data.MNISTLoader()
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
-    loss_func = layers.LossesFunc('reduce_sum_sparse_categorical_crossentropy')
+    loss_func = custom_losses.LossesFunc('reduce_sum_sparse_categorical_crossentropy')
 
     # training
     model = runner.model_train(data_loader, model, loss_func.loss, optimizer, batch_size=batch_size, num_epoches=num_epoches)
@@ -201,7 +201,7 @@ def sequence_lr_runner():
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
 
-    loss_func = layers.LossesFunc('reduce_sum_sparse_categorical_crossentropy')
+    loss_func = custom_losses.LossesFunc('reduce_sum_sparse_categorical_crossentropy')
 
     # training
     model = runner.model_train(data_loader, model, loss_func.loss, optimizer, batch_size=batch_size, num_epoches=num_epoches)

@@ -1,17 +1,20 @@
 #!/usr/bin/env python 
 # -*- coding: utf-8 -*-
 """
-@File           : layers
+@File           : custom_losses
 @Software       : PyCharm
-@Modify Time    : 2020/9/11 08:13     
+@Modify Time    : 2020/9/22 08:59     
 @Author         : zermzhang
 @version        : 1.0
-@Desciption     : the utils functions for layers
+@Desciption     : 
 """
 import tensorflow as tf
 
 
 class LossesFunc(object):
+    """
+    the custom loss function
+    """
     def __init__(self, name="reduce_sum_sparse_categorical_crossentropy"):
         self.name = name
         if self.name == "reduce_sum_sparse_categorical_crossentropy":

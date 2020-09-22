@@ -14,7 +14,7 @@ import tensorflow as tf
 
 from models import lr, mlp
 from datas import load_data
-from utils import runner, layers
+from utils import runner, custom_layers
 from utils.model_utils import classes_activation_check
 
 
@@ -82,7 +82,7 @@ def tester(CONFIG):
     model = WideAndDeep(CONFIG)
     data_loader = load_data.MNISTLoader()
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-    loss_func = layers.LossesFunc('reduce_sum_sparse_categorical_crossentropy').loss
+    loss_func = custom_layers.LossesFunc('reduce_sum_sparse_categorical_crossentropy').loss
 
     # training
     model = runner.model_train(data_loader, model, loss_func, optimizer, batch_size=batch_size, num_epoches=num_epoches)
