@@ -70,6 +70,7 @@ class CustomDataLoader(object):
                                                                  self.params, self.label_name)
         (self.test_data, self.test_label) = self._get_csv_data(self.test_path,
                                                                self.params, self.label_name)
+        self.num_train_data, self.num_test_data = self.train_data.shape[0], self.test_data.shape[0]
 
     @staticmethod
     def _get_csv_data(data_path, params, label_name):
@@ -77,6 +78,10 @@ class CustomDataLoader(object):
         features = data[[col for col in data.columns if col != label_name]]
         labels = data[[label_name]]
         return features, labels
+
+    def get_batch(self, batch_size):
+        index = np.random.randint(0, self.num_train_data, batch_size)
+        return self.train_data[index, :], self.train_label[index]
 
 
 if __name__ == "__main__":
