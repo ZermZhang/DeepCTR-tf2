@@ -9,6 +9,7 @@
 @Desciption     : 
 """
 import numpy as np
+import pandas as pd
 
 import tensorflow as tf
 
@@ -54,6 +55,28 @@ class RnnDataLoader(object):
             seq.append(self.text[index: index + seq_length])
             next_char.append(self.text[index + seq_length])
         return np.array(seq), np.array(next_char)
+
+
+class CustomDataLoader(object):
+    def __init__(self, CONFIG):
+        self.dataset_config = CONFIG.dataset_config
+        self.train_path = self.dataset_config.get('train_path', None)
+        self.test_path = self.dataset_config.get('test_path', None)
+        assert self.train_path is not None and self.test_path is not None
+        self.label_name = self.dataset_config.get('label_name', None)
+        assert self.label_name is not None
+        self.params = self.dataset_config.get('params', None)
+        (self.train_data, self.train_label) = self._get_csv_data(self.train_path,
+                                                                 self.params, self.label_name)
+        (self.test_data, self.test_label) = self._get_csv_data(self.test_path,
+                                                               self.params, self.label_name)
+
+    @staticmethod
+    def _get_csv_data(data_path, params, label_name):
+        data = pd.read_csv(data_path, **params)
+        features = data[[col for col in data.columns if col != label_name]]
+        labels = data[[label_name]]
+        return features, labels
 
 
 if __name__ == "__main__":

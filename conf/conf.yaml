@@ -2,6 +2,15 @@
 ## the configure data for models
 ########################################################
 
+dataset:
+    train_path: ./datas/train/train_data.txt
+    test_path: ./datas/test/test_data.txt
+    label_name: click
+    type: csv
+    params:
+        header: 0
+        sep: ','
+
 model:
     num_episodes: 500
     num_exploration_episodes: 100

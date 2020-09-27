@@ -29,6 +29,10 @@ class Config(object):
         return config
 
     @property
+    def dataset_config(self):
+        return self.config.get('dataset', {})
+
+    @property
     def model_config(self):
         return self.config.get('model', {})
 
