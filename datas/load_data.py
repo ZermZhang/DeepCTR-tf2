@@ -81,7 +81,7 @@ class CustomDataLoader(object):
 
     def get_batch(self, batch_size):
         index = np.random.randint(0, self.num_train_data, batch_size)
-        return self.train_data[index, :], self.train_label[index]
+        return np.array(self.train_data)[index, :], np.array(self.train_label)[index, :]
 
 
 if __name__ == "__main__":

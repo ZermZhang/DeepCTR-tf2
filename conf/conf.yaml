@@ -2,6 +2,7 @@
 ## the configure data for models
 ########################################################
 
+# the configure info for datasets
 dataset:
     train_path: ./datas/train/train_data.txt
     test_path: ./datas/test/test_data.txt
@@ -11,6 +12,34 @@ dataset:
         header: 0
         sep: ','
 
+# the configure info for feature columns
+columns:
+    id: float
+    click: int
+    hour: float
+    C1: float
+    banner_pos: float
+    site_id: string
+    site_domain: string
+    site_category: string
+    app_id: string
+    app_domain: string
+    app_category: string
+    device_id: string
+    device_ip: string
+    device_model: string
+    device_type: float
+    device_conn_type: float
+    C14: float
+    C15: float
+    C16: float
+    C17: float
+    C18: float
+    C19: float
+    C20: float
+    C21: float
+
+# the configure info for model
 model:
     num_episodes: 500
     num_exploration_episodes: 100
@@ -28,4 +57,4 @@ model:
         activation: relu
 
     wide:
-        activation: softmax
+        activation: sigmoid

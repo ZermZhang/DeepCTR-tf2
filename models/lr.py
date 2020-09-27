@@ -20,7 +20,7 @@ class Lr(tf.keras.Model):
         self.classes = config.model_config['classes']
         self.wide_params = config.wide_model_config
         self.activation = tf.keras.activations.get(self.wide_params['activation'])
-        classes_activation_check(self.classes, self.activation)
+        classes_activation_check(self.classes, self.wide_params['activation'])
         self.flatten = tf.keras.layers.Flatten()
         self.dense = tf.keras.layers.Dense(
             units=self.classes,
