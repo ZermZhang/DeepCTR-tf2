@@ -57,7 +57,8 @@ class RnnDataLoader(object):
         return np.array(seq), np.array(next_char)
 
 
-class CustomDataLoader(object):
+# the data loader for all numeric data
+class CustomDataLoaderNumeric(object):
     def __init__(self, CONFIG):
         self.dataset_config = CONFIG.dataset_config
         self.train_path = self.dataset_config.get('train_path', None)
@@ -82,6 +83,17 @@ class CustomDataLoader(object):
     def get_batch(self, batch_size):
         index = np.random.randint(0, self.num_train_data, batch_size)
         return np.array(self.train_data)[index, :], np.array(self.train_label)[index, :]
+
+
+class CustomDataLoader(object):
+    def __init__(self, CONFIG):
+        self.dataset_config = CONFIG.dataset_config
+        self.schema = CONFIG.read_feature_schema()
+        self.train_path = self.dataset_config.get('train_path', None)
+        self.test_path = self.dataset_config.get('test_path', None)
+        assert self.train_path is not None and self.test_path is not None
+        self.label_name = self.dataset_config.get('label_name', None)
+        assert self.label_name is not None
 
 
 if __name__ == "__main__":

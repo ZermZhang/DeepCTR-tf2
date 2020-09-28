@@ -28,10 +28,17 @@ class Config(object):
             config = yaml.load(f)
         return config
 
+    # the dataset config info from configure file
     @property
     def dataset_config(self):
         return self.config.get('dataset', {})
 
+    # the feature columns config info from configure file
+    @property
+    def feature_config(self):
+        return self.config.get('features', {})
+
+    # the model config info from configure file
     @property
     def model_config(self):
         return self.config.get('model', {})
@@ -43,6 +50,34 @@ class Config(object):
     @property
     def wide_model_config(self):
         return self.model_config.get('wide', {})
+
+    def read_data_schema(self):
+        dataset_config = self.dataset_config
+        schema = dataset_config.get('schema', {})
+        return schema
+
+    def get_column_default(self):
+        schema = self.read_data_schema()
+        column_names = list(schema.keys())
+        column_defaults = []
+
+        def get_default_value(dtype):
+            if (not dtype) or (dtype == 'string'):
+                return ""
+            elif dtype == 'int':
+                return 0
+            elif dtype == 'float':
+                return 0.0
+            else:
+                raise Exception('dtype: {} is not supported'.format(dtype))
+
+        for name, value in schema.items():
+            if value['default'] is not None:
+                column_defaults.append(value['default'])
+            else:
+                column_defaults.append(get_default_value(value['type']))
+
+        return column_names, column_defaults
 
 
 if __name__ == "__main__":

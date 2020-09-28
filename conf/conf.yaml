@@ -9,35 +9,81 @@ dataset:
     label_name: click
     type: csv
     params:
-        header: 0
+        header: True
         sep: ','
-
-# the configure info for feature columns
-columns:
-    id: float
-    click: int
-    hour: float
-    C1: float
-    banner_pos: float
-    site_id: string
-    site_domain: string
-    site_category: string
-    app_id: string
-    app_domain: string
-    app_category: string
-    device_id: string
-    device_ip: string
-    device_model: string
-    device_type: float
-    device_conn_type: float
-    C14: float
-    C15: float
-    C16: float
-    C17: float
-    C18: float
-    C19: float
-    C20: float
-    C21: float
+    schema:
+        id:
+            type: string
+            default: '0'
+        click:
+            type: int
+            default: 0
+        hour:
+            type: float
+            default: 14102100.0
+        C1:
+            type: float
+            default: 1005.0
+        banner_pos:
+            type: string
+            default: '0'
+        site_id:
+            type: string
+            default: '0'
+        site_domain:
+            type: string
+            default: '0'
+        site_category:
+            type: string
+            default: '0'
+        app_id:
+            type: string
+            default: 'ecad2386'
+        app_domain:
+            type: string
+            default: '7801e8d9'
+        app_category:
+            type: string
+            default: '07d7df22'
+        device_id:
+            type: string
+            default: 'a99f214a'
+        device_ip:
+            type: string
+            default: 'ddd2926e'
+        device_model:
+            type: string
+            default: '44956a24'
+        device_type:
+            type: float
+            default: 0
+        device_conn_type:
+            type: float
+            default: 0
+        C14:
+            type: float
+            default: 0
+        C15:
+            type: float
+            default: 0
+        C16:
+            type: float
+            default: 0
+        C17:
+            type: float
+            default: 0
+        C18:
+            type: float
+            default: 0
+        C19:
+            type: float
+            default: 0
+        C20:
+            type: float
+            default: 0
+        C21:
+            type: float
+            default: 0
 
 # the configure info for model
 model:
