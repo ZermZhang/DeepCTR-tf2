@@ -51,6 +51,12 @@ class Config(object):
     def wide_model_config(self):
         return self.model_config.get('wide', {})
 
+    # the detail info for data config
+    def read_data_params(self):
+        dataset_config = self.dataset_config
+        params = dataset_config.get('params', {'head': True, 'sep': ','})
+        return params
+
     def read_data_schema(self):
         dataset_config = self.dataset_config
         schema = dataset_config.get('schema', {})

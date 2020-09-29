@@ -8,6 +8,7 @@ dataset:
     test_path: ./datas/test/test_data.txt
     label_name: click
     type: csv
+    batch_size: 32
     params:
         header: True
         sep: ','
