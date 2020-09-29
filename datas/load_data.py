@@ -88,7 +88,7 @@ class CustomDataLoaderNumeric(object):
 class CustomDataLoader(object):
     def __init__(self, CONFIG, data_path, mode='train'):
         self.dataset_config = CONFIG.dataset_config
-        self.schema = CONFIG.read_feature_schema()
+        self.schema = CONFIG.read_data_schema()
         self.mode = mode
         assert self.mode in {'train', 'test'}, ('the data type {} is not supported'.format(self.mode))
 
@@ -100,15 +100,20 @@ class CustomDataLoader(object):
         self.column_names, self.column_defaults = CONFIG.get_column_default()
 
     def _parse_csv(self):
+        column_names = self.column_names
         column_defaults = self.column_defaults
         field_delim = self.params['sep']
 
         def parser(value):
             columns = tf.io.decode_csv(value, record_defaults=column_defaults, field_delim=field_delim)
-            return columns
+            features = dict(zip(column_names, columns))
+            label = features.pop(self.label_name)
+            return features, label
+        
+        return parser
 
     def input_fn(self):
-        dataset = tf.data.TextLineDataset(self.data_path).skip(1) if self.params['head'] is True else tf.data.TextLineDataset(
+        dataset = tf.data.TextLineDataset(self.data_path).skip(1) if self.params['header'] is True else tf.data.TextLineDataset(
             self.data_path)
         return dataset.map(self._parse_csv())
 
