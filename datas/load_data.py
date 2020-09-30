@@ -13,6 +13,7 @@ import pandas as pd
 
 import tensorflow as tf
 
+from utils.config import Config
 
 class MNISTLoader(object):
     def __init__(self):
@@ -112,11 +113,26 @@ class CustomDataLoader(object):
         
         return parser
 
-    def input_fn(self):
+    def input_fn(self, batch_size, epochs):
         dataset = tf.data.TextLineDataset(self.data_path).skip(1) if self.params['header'] is True else tf.data.TextLineDataset(
             self.data_path)
-        return dataset.map(self._parse_csv())
+
+        # parse the csv data
+        dataset = dataset.map(self._parse_csv())
+
+        if self.mode == 'train':
+            dataset = dataset.shuffle(buffer_size=10000, seed=123)
+            dataset = dataset.repeat(epochs)
+
+        dataset = dataset.prefetch(2 * batch_size).batch(batch_size)
+        return dataset
 
 
 if __name__ == "__main__":
-    data_load = MNISTLoader()
+    CONFIG = Config('./conf/conf.yaml')
+    train_path = CONFIG.read_data_path('train')
+    batch_size = CONFIG.read_data_batch_size()
+    epochs = CONFIG.read_data_epochs()
+    data_load = CustomDataLoader(CONFIG, train_path).input_fn(batch_size=batch_size, epochs=epochs)
+
+    print(list(data_load.as_numpy_iterator())[0])

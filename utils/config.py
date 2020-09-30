@@ -52,6 +52,17 @@ class Config(object):
         return self.model_config.get('wide', {})
 
     # the detail info for data config
+    def read_data_path(self, mode='train'):
+        dataset_config = self.dataset_config
+        data_path = ''
+        if mode == 'train':
+            data_path = dataset_config.get('train_path', '')
+        elif mode == 'test':
+            data_path = dataset_config.get('test_path', '')
+        else:
+            raise ("the mode {} is not supported".format(mode))
+        return data_path
+
     def read_data_params(self):
         dataset_config = self.dataset_config
         params = dataset_config.get('params', {'head': True, 'sep': ','})
@@ -61,6 +72,16 @@ class Config(object):
         dataset_config = self.dataset_config
         schema = dataset_config.get('schema', {})
         return schema
+
+    def read_data_batch_size(self):
+        dataset_config = self.dataset_config
+        batch_size = dataset_config.get('batch_size', 128)
+        return batch_size
+
+    def read_data_epochs(self):
+        dataset_config = self.dataset_config
+        epochs = dataset_config.get('epochs', 10)
+        return epochs
 
     def get_column_default(self):
         schema = self.read_data_schema()
@@ -78,7 +99,7 @@ class Config(object):
                 raise Exception('dtype: {} is not supported'.format(dtype))
 
         for name, value in schema.items():
-            if value['default'] is not None:
+            if value.get('default', None) is not None:
                 column_defaults.append(value['default'])
             else:
                 column_defaults.append(get_default_value(value['type']))
