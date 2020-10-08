@@ -1,0 +1,16 @@
+##############################################################
+## the configure info for feature in model
+##    the feature in feautre_config must apper in dataset
+##
+##############################################################
+
+continuous_features:
+    c1:
+        normalizer:
+        boundaries:
+    c2:
+        normalizer:
+        boundaries:
+    c3:
+        normalizer:
+        boundaries:

@@ -4,14 +4,14 @@
 
 # the configure info for datasets
 dataset:
-    train_path: ./datas/train/train
+    train_path: D:/project/DeepCTR-tf2/datas/train/train
     test_path: ./datas/test/test_data.txt
     label_name: label
     type: csv
     batch_size: 32
     epoches: 10
     params:
-        header: True
+        header: False
         sep: ','
     schema:
         label:
