@@ -20,7 +20,17 @@ class Config(object):
             raise Exception("{config_path} not exists".format(config_path=abs_path))
         else:
             self.config_path = abs_path
-            self.config = self.load(self.config_path)
+            self.__conf_path_check(self.config_path)
+            self.config = self.load(os.path.join(self.config_path, 'conf.yaml'))
+            self.feature_config = self.load(os.path.join(self.config_path, 'feature.yaml'))
+
+    @staticmethod
+    def __conf_path_check(config_path):
+        config_files = os.listdir(config_path)
+        if 'conf.yaml' not in config_files:
+            raise Exception("{} not existed!".format('conf.yaml'))
+        if 'feature.yaml' not in config_files:
+            raise Exception("{} not existed!".format('feature.yaml'))
 
     @staticmethod
     def load(config_path):
@@ -32,11 +42,6 @@ class Config(object):
     @property
     def dataset_config(self):
         return self.config.get('dataset', {})
-
-    # the feature columns config info from configure file
-    @property
-    def feature_config(self):
-        return self.config.get('features', {})
 
     # the model config info from configure file
     @property
@@ -105,6 +110,13 @@ class Config(object):
                 column_defaults.append(get_default_value(value['type']))
 
         return column_names, column_defaults
+
+    # parser the feature column info
+    def get_continuous_features_config(self):
+        return self.feature_config.get('continuous_features', None)
+
+    def get_sparse_features_config(self):
+        return self.feature_config.get('sparse_features', None)
 
 
 if __name__ == "__main__":

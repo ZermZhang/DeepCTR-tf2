@@ -10,6 +10,8 @@
 """
 import tensorflow as tf
 
+from utils import config
+
 
 class BaseFeatureColumn(object):
     def __init__(self):
@@ -41,7 +43,6 @@ class ContinuousFeatureColumn(BaseFeatureColumn):
     def __init__(self, continuous_feature_config):
         super().__init__()
 
-
     @staticmethod
     def _normalizer_fn_builder(normalization_name, normalization_params):
         """normalizer_fn builder"""
@@ -58,3 +59,7 @@ class ContinuousFeatureColumn(BaseFeatureColumn):
 class SparseFeatureColumn(BaseFeatureColumn):
     def __init__(self, sparse_feature_config):
         super().__init__()
+
+
+def get_feature_columns():
+    return 0
