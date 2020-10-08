@@ -10,9 +10,6 @@
 """
 import tensorflow as tf
 
-from utils import config
-
-
 class BaseFeatureColumn(object):
     def __init__(self):
         # the feature column for numeric features
@@ -61,5 +58,13 @@ class SparseFeatureColumn(BaseFeatureColumn):
         super().__init__()
 
 
-def get_feature_columns():
+def get_feature_columns(CONFIG):
+    feature_config = CONFIG.feature_config
+    continuous_features_config = CONFIG.get_continuous_features_config()
+    sparse_features_config = CONFIG.get_sparse_features_config()
+
+    # generate the feature columns for continuous features
+
+    # generate the feature columns for sparse features
+    
     return 0
