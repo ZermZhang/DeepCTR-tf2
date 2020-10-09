@@ -1,7 +1,19 @@
 ##############################################################
 ## the configure info for feature in model
-##    the feature in feautre_config must apper in dataset
+##    the feature in feautre_config must be appeared in dataset
 ##
+## continuous features:
+##      the features ==> tf.feature_column.numeric_column
+## sparse_features:
+##      the features ==> tf.feature_column.{column}
+## embedding_features AND shared_embedding_features:
+##      should be appeared in sparse_features:
+##      embedding_features:
+##          tf.feature_column.embedding_column(sparse_features_column)
+##      shared_embedding_features:
+##          tf.feature_column.shared_embedding_column(sparse_features_column)
+##      indicator_column:
+##          tf.feature_column.inicator_column(sparse_features_column)
 ##############################################################
 
 continuous_features:
@@ -14,3 +26,14 @@ continuous_features:
     c3:
         normalizer:
         boundaries:
+
+sparse_features:
+    s1:
+        column: vocab
+
+embedding_features:
+    s1:
+
+shared_embedding_features:
+    s1:
+        columns: [s1, s1_1, s1_2]
