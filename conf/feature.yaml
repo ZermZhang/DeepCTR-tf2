@@ -6,6 +6,7 @@
 ##      the features ==> tf.feature_column.numeric_column
 ## sparse_features:
 ##      the features ==> tf.feature_column.{column}
+##      the params in sparse_features config should be same as the input params for colmn
 ## embedding_features AND shared_embedding_features:
 ##      should be appeared in sparse_features:
 ##      embedding_features:
@@ -30,6 +31,7 @@ continuous_features:
 sparse_features:
     s1:
         column: vocab
+        params:
 
 embedding_features:
     s1:

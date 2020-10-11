@@ -6,56 +6,38 @@
 @Modify Time    : 2020/9/30 08:54     
 @Author         : zermzhang
 @version        : 1.0
-@Desciption     : 
+@Desciption     :
+    the continuous features just input for continuous feature column
+    the sparse features as the input for the specified feature column AND the specified embedding feature column
 """
 import tensorflow as tf
 
-class BaseFeatureColumn(object):
-    def __init__(self):
-        # the feature column for numeric features
-        self.numeric_column = tf.feature_column.numeric_column
-        self.sequence_numeric_column = tf.feature_column.sequence_numeric_column
-        # the feature column for sparse features
-        self.bucketized_column = tf.feature_column.bucketized_column
-        self.categorical_column_with_hash_bucket = tf.feature_column.categorical_column_with_hash_bucket
-        self.categorical_column_with_identity = tf.feature_column.categorical_column_with_identity
-        self.categorical_column_with_vocabulary_file = tf.feature_column.categorical_column_with_vocabulary_file
-        self.categorical_column_with_vocabulary_list = tf.feature_column.categorical_column_with_vocabulary_list
-        # the feature column for sequence features
-        self.sequence_categorical_column_with_hash_bucket = tf.feature_column.sequence_categorical_column_with_hash_bucket
-        self.sequence_categorical_column_with_identity = tf.feature_column.sequence_categorical_column_with_identity
-        self.sequence_categorical_column_with_vocabulary_file = tf.feature_column.sequence_categorical_column_with_vocabulary_file
-        self.sequence_categorical_column_with_vocabulary_list = tf.feature_column.sequence_categorical_column_with_vocabulary_list
-        # the feature column for embedding column
-        self.shared_embeddings = tf.feature_column.shared_embeddings
-        self.crossed_column = tf.feature_column.crossed_column
-        self.embedding_column = tf.feature_column.embedding_column
-        self.indicator_column = tf.feature_column.indicator_column
+
+_SUPPORTED_FEATURE_COLUMNS = {
+    'continuous': tf.feature_column.numeric_column,
+    'vocab_file': tf.feature_column.categorical_column_with_vocabulary_file,
+    'vocab_list': tf.feature_column.categorical_column_with_vocabulary_list,
+    'identity': tf.feature_column.categorical_column_with_identity,
+    'hash_bucket': tf.feature_column.categorical_column_with_hash_bucket,
+    'sequence_vocab_file': tf.feature_column.sequence_categorical_column_with_vocabulary_file,
+    'sequence_vocab_list': tf.feature_column.sequence_categorical_column_with_vocabulary_list,
+    'sequence_identity': tf.feature_column.sequence_categorical_column_with_identity,
+    'sequence_hash_bucket': tf.feature_column.sequence_categorical_column_with_hash_bucket,
+    'embedding': tf.feature_column.embedding_column,
+    'shared_embeding': tf.feature_column.shared_embeddings
+}
 
 
-class ContinuousFeatureColumn(BaseFeatureColumn):
-    """
-    the Feature Column for continuous features
-    """
-    def __init__(self, continuous_feature_config):
-        super().__init__()
-
-    @staticmethod
-    def _normalizer_fn_builder(normalization_name, normalization_params):
-        """normalizer_fn builder"""
-        if normalization_name == 'min_max':
-            return lambda x: (x - normalization_params[0]) / (normalization_params[1] - normalization_params[0])
-        elif normalization_name == 'standard':
-            return lambda x: (x - normalization_params[0]) / normalization_params[1]
-        elif normalization_name == 'log':
-            return lambda x: tf.math.log(x)
-        else:
-            return None
-
-
-class SparseFeatureColumn(BaseFeatureColumn):
-    def __init__(self, sparse_feature_config):
-        super().__init__()
+def _normalizer_fn_builder(normalization_name, normalization_params):
+    """normalizer_fn builder"""
+    if normalization_name == 'min_max':
+        return lambda x: (x - normalization_params[0]) / (normalization_params[1] - normalization_params[0])
+    elif normalization_name == 'standard':
+        return lambda x: (x - normalization_params[0]) / normalization_params[1]
+    elif normalization_name == 'log':
+        return lambda x: tf.math.log(x)
+    else:
+        return None
 
 
 def get_feature_columns(CONFIG):
@@ -63,8 +45,26 @@ def get_feature_columns(CONFIG):
     continuous_features_config = CONFIG.get_continuous_features_config()
     sparse_features_config = CONFIG.get_sparse_features_config()
 
+    wide_columns = {}
+    deep_columns = {}
     # generate the feature columns for continuous features
+    for feature, params in continuous_features_config:
+        normalizer = _normalizer_fn_builder(params['normalizer'], tuple(params['boundaries']))
+        col = _SUPPORTED_FEATURE_COLUMNS['continuous'](
+            key=feature,
+            shape=(1,),
+            default_value=0,
+            dtype=tf.float32,
+            normalizer_fn=normalizer
+        )
+        deep_columns[feature] = col
+
+    for feature, conf in sparse_features_config:
+        col = _SUPPORTED_FEATURE_COLUMNS[conf['column']](
+            key=feature,
+            **conf
+        )
 
     # generate the feature columns for sparse features
-    
+
     return 0
