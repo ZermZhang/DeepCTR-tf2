@@ -7,6 +7,20 @@
 ## sparse_features:
 ##      the features ==> tf.feature_column.{column}
 ##      the params in sparse_features config should be same as the input params for colmn
+##
+## the params for sparse_features:
+##      {feature_name}:
+##          columnn_type: [vocab_file, hash_bucket, identity, vocab_list]
+##          params: {the params for feature column inputs}
+##
+## A example for sparse_features config:
+##    sparse_features:
+##        s1:
+##            column_type: vocab_list
+##            params:
+##                vocabulary_list: ['0', '1', '2']
+##                default_value: 0
+##
 ## embedding_features AND shared_embedding_features:
 ##      should be appeared in sparse_features:
 ##      embedding_features:
@@ -27,11 +41,6 @@ continuous_features:
     c3:
         normalizer:
         boundaries:
-
-sparse_features:
-    s1:
-        column_type: vocab
-        params:
 
 embedding_features:
     s1:

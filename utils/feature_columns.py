@@ -59,12 +59,17 @@ def get_feature_columns(CONFIG):
         )
         deep_columns[feature] = col
 
-    for feature, conf in sparse_features_config:
-        col = _SUPPORTED_FEATURE_COLUMNS[conf['column']](
-            key=feature,
-            **conf
-        )
-
     # generate the feature columns for sparse features
+    for feature, conf in sparse_features_config:
+        column_type = conf['column_type']
+        column_params = conf['params']
+
+        col = _SUPPORTED_FEATURE_COLUMNS[column_type](
+            key=feature,
+            **column_params
+        )
+        wide_columns[feature] = col
+
+    # generate the feature columns for embedding features
 
     return 0
