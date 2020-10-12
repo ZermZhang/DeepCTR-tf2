@@ -30,7 +30,7 @@ continuous_features:
 
 sparse_features:
     s1:
-        column: vocab
+        column_type: vocab
         params:
 
 embedding_features:
