@@ -118,6 +118,15 @@ class Config(object):
     def get_sparse_features_config(self):
         return self.feature_config.get('sparse_features', None)
 
+    def get_cross_features_config(self):
+        return self.feature_config.get('cross_features', None)
+
+    def get_embedding_features_config(self):
+        return self.feature_config.get('embedding_features', None)
+
+    def get_shared_embedding_features_config(self):
+        return self.feature_config.get('shared_embedding_features', None)
+
 
 if __name__ == "__main__":
 
