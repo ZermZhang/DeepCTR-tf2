@@ -42,9 +42,22 @@ continuous_features:
         normalizer:
         boundaries:
 
+sparse_features:
+    s1:
+        column_type: vocab_list
+        params:
+            vocabulary_list: ['0', '1', '2']
+            default_value: 0
+    s2:
+        column_type: vocab_list
+        params:
+            vocabulary_list: ['4', '5', '6']
+            default_value: 0
+
 embedding_features:
     s1:
-
-shared_embedding_features:
-    s1:
-        columns: [s1, s1_1, s1_2]
+        params:
+            dimension: 10
+    s2:
+        params:
+            dimension: 10

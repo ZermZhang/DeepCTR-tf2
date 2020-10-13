@@ -44,12 +44,15 @@ def get_feature_columns(CONFIG):
     feature_config = CONFIG.feature_config
     continuous_features_config = CONFIG.get_continuous_features_config()
     sparse_features_config = CONFIG.get_sparse_features_config()
+    cross_features_config = CONFIG.get_cross_features_config()
+    embedding_features_config = CONFIG.get_embedding_features_config()
+    shared_embedding_features_config = CONFIG.get_shared_embedding_features_config()
 
     wide_columns = {}
     deep_columns = {}
     # generate the feature columns for continuous features
-    for feature, params in continuous_features_config:
-        normalizer = _normalizer_fn_builder(params['normalizer'], tuple(params['boundaries']))
+    for feature, params in continuous_features_config.items():
+        normalizer = _normalizer_fn_builder(params['normalizer'], params['boundaries'])
         col = _SUPPORTED_FEATURE_COLUMNS['continuous'](
             key=feature,
             shape=(1,),
@@ -60,7 +63,7 @@ def get_feature_columns(CONFIG):
         deep_columns[feature] = col
 
     # generate the feature columns for sparse features
-    for feature, conf in sparse_features_config:
+    for feature, conf in sparse_features_config.items():
         column_type = conf['column_type']
         column_params = conf['params']
 
@@ -70,6 +73,38 @@ def get_feature_columns(CONFIG):
         )
         wide_columns[feature] = col
 
-    # generate the feature columns for embedding features
+    # generate the feature columns for cross features
 
-    return 0
+    # generate the feature columns for embedding features
+    for feature, conf in embedding_features_config.items():
+        params = conf['params']
+        assert feature in wide_columns, 'the columns: {} not contain in sparse features'.format(feature)
+        emb_col = _SUPPORTED_FEATURE_COLUMNS['embedding'](
+            categorical_column=wide_columns[feature],
+            **params
+        )
+        deep_columns[feature] = emb_col
+
+    # generate the feature columns for shared embedding features
+    # shared_embedding_columns is not supported in eager execution
+    # for feature, conf in shared_embedding_features_config.items():
+    #     columns = conf['categorical_columns']
+    #     assert set(columns).issubset(wide_columns), 'the columns: {} not all contain in sparse features'.format(columns)
+    #     columns = [wide_columns[column] for column in columns]
+    #     params = conf['params']
+    #     emb_col = _SUPPORTED_FEATURE_COLUMNS['shared_embeding'](
+    #         categorical_columns=columns,
+    #         **params
+    #     )
+    #     deep_columns[feature] = emb_col
+
+    return wide_columns, deep_columns
+
+
+if __name__ == "__main__":
+    conf_dir = './conf'
+    from utils import config
+    CONFIG = config.Config(conf_dir)
+    wide_columns, deep_columns = get_feature_columns(CONFIG)
+    print(wide_columns)
+    print(deep_columns)
