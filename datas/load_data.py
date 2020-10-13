@@ -129,7 +129,7 @@ class CustomDataLoader(object):
 
 
 if __name__ == "__main__":
-    CONFIG = Config('./conf/conf.yaml')
+    CONFIG = Config('./conf/')
     train_path = CONFIG.read_data_path('train')
     batch_size = CONFIG.read_data_batch_size()
     epochs = CONFIG.read_data_epochs()
