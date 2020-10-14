@@ -23,3 +23,7 @@ class LossesFunc(object):
     @staticmethod
     def reduce_sum_sparse_categorical_crossentropy(y_true, y_pred):
         return tf.reduce_sum(tf.keras.losses.sparse_categorical_crossentropy(y_true=y_true, y_pred=y_pred))
+
+    @staticmethod
+    def reduce_mean_squre_loss(y_true, y_pred):
+        return tf.reduce_mean(tf.square(y_pred - y_true))
