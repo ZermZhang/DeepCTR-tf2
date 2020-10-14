@@ -7,7 +7,7 @@ from datas import load_data
 from utils import config, runner, custom_layers, custom_losses
 
 # 获取模型的相关配置
-CONFIG = config.Config("./conf/conf.yaml")
+CONFIG = config.Config("./conf/")
 CONFIG_TRAIN = CONFIG.model_config
 
 num_epoches = CONFIG_TRAIN.get('num_epoches', 3)
@@ -15,34 +15,6 @@ batch_size = CONFIG_TRAIN.get('batch_size', 100)
 learning_rate = CONFIG_TRAIN.get('learning_rate', 0.01)
 
 print("the model parameters:\n\tnum_epoches: {}\n\tbatch_size: {}\n\tlearning_rate: {}".format(num_epoches, batch_size, learning_rate))
-
-
-# TODO: 调整各个模型测试用例的位置，保持main的整洁
-def linear_runner():
-    """
-    the example runner for linear model
-    """
-    X = tf.constant([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
-    y = tf.constant([[10.0], [20.0]])
-
-    # model = linear.Linear()
-    model = lr.Lr()
-    optimizer = tf.keras.optimizers.SGD(learning_rate=0.01)
-
-    for i in range(100):
-        with tf.GradientTape() as tape:
-            y_pred = model(X)
-            loss = tf.reduce_mean(tf.square(y_pred - y))
-
-        grads = tape.gradient(loss, model.variables)
-        optimizer.apply_gradients(grads_and_vars=zip(grads, model.variables))
-
-    print(model.variables)
-
-    # array([[0.16730985],
-    #        [1.14391],
-    #        [2.1205118]], dtype=float32)
-    return 0
 
 
 def sequence_mlp_runner():
@@ -221,4 +193,4 @@ def sequence_lr_runner():
 
 
 if __name__ == '__main__':
-    drl.tester(CONFIG)
+    linear_runner()
