@@ -25,19 +25,22 @@ class LinearBase(tf.keras.Model):
             bias_initializer=tf.zeros_initializer()
         )
 
+    def get_dense_layers(self, inputs):
+        return self.dense(inputs)
+
     def call(self, input):
         output = self.dense(input)
         return output
 
 
-class Linear(tf.keras.Model):
+class Linear(LinearBase):
     def __init__(self, feature_columns):
-        super().__init__()
+        super(Linear, self).__init__()
         self.input_layers = tf.keras.layers.DenseFeatures(feature_columns)
 
     def call(self, input):
         inputs = self.input_layers(input)
-        output = self.dense(inputs)
+        output = super(Linear, self).get_dense_layers(inputs)
         return output
 
 
@@ -68,6 +71,10 @@ def columns_sequence_linear(feature_columns):
     return model
 
 
+#####################################################################
+# the test for different implementation
+#####################################################################
+
 def tester(CONFIG, wide_columns={}, deep_columns={}):
     config_train = CONFIG.model_config
 
@@ -89,7 +96,30 @@ def tester(CONFIG, wide_columns={}, deep_columns={}):
     return 0
 
 
-def linear_runner():
+def linear_runner(CONFIG, wide_columns={}, deep_columns={}):
+
+    train_path = CONFIG.read_data_path('train')
+    batch_size = CONFIG.read_data_batch_size()
+    epochs = CONFIG.read_data_epochs()
+    data_load = load_data.CustomDataLoader(CONFIG, train_path).input_fn(batch_size=batch_size, epochs=epochs)
+
+    model = Linear(deep_columns.values())
+    optimizer = tf.keras.optimizers.SGD(learning_rate=0.01)
+
+    for i in range(100):
+        X, y = next(iter(data_load))
+        with tf.GradientTape() as tape:
+            y_pred = model(X)
+            loss = tf.reduce_mean(tf.square(y_pred - y))
+
+        grads = tape.gradient(loss, model.variables)
+        optimizer.apply_gradients(grads_and_vars=zip(grads, model.variables))
+
+    print(model.variables)
+    return 0
+
+
+def linear_base_runner():
     """
     the example runner for linear model
     """
@@ -122,4 +152,4 @@ if __name__ == "__main__":
     if not wide_columns and not deep_columns:
         tester(CONFIG)
     else:
-        tester(CONFIG, wide_columns, deep_columns)
+        linear_runner(CONFIG, wide_columns, deep_columns)

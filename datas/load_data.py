@@ -15,6 +15,7 @@ import tensorflow as tf
 
 from utils.config import Config
 
+
 class MNISTLoader(object):
     def __init__(self):
         mnist = tf.keras.datasets.mnist
