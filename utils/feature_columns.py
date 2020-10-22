@@ -10,7 +10,13 @@
     the continuous features just input for continuous feature column
     the sparse features as the input for the specified feature column AND the specified embedding feature column
 """
+
 import tensorflow as tf
+
+from tensorflow.python.feature_column.feature_column import _EmbeddingColumn
+from tensorflow.python.feature_column.feature_column import _SharedEmbeddingColumn
+from tensorflow.python.feature_column.feature_column_v2 import EmbeddingColumn
+from tensorflow.python.feature_column.feature_column_v2 import SharedEmbeddingColumn
 
 
 _SUPPORTED_FEATURE_COLUMNS = {
@@ -26,6 +32,14 @@ _SUPPORTED_FEATURE_COLUMNS = {
     'embedding': tf.feature_column.embedding_column,
     'shared_embeding': tf.feature_column.shared_embeddings
 }
+
+
+def is_embedding_column(feature_column):
+    return isinstance(feature_column, (_EmbeddingColumn, EmbeddingColumn, _SharedEmbeddingColumn, SharedEmbeddingColumn))
+
+
+def is_shared_embedding_column(feature_column):
+    return isinstance(feature_column, (_SharedEmbeddingColumn, SharedEmbeddingColumn))
 
 
 def _normalizer_fn_builder(normalization_name, normalization_params):
@@ -107,6 +121,20 @@ def get_feature_columns(CONFIG):
     #     deep_columns[feature] = emb_col
 
     return wide_columns, deep_columns
+
+
+def input_from_feature_columns(features, feature_columns):
+    dense_value_list = []
+    sparse_emb_list = []
+
+    for keys, column in feature_columns:
+        if is_embedding_column(column):
+            sparse_emb = tf.expand_dims(tf.keras.layers.DenseFeatures(column)(features), axis=1)
+            sparse_emb_list.append(sparse_emb)
+        else:
+            dense_value_list.append(tf.keras.layers.DenseFeatures(column)(features))
+
+    return dense_value_list, sparse_emb_list
 
 
 if __name__ == "__main__":
