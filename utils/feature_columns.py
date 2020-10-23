@@ -127,7 +127,7 @@ def input_from_feature_columns(features, feature_columns):
     dense_value_list = []
     sparse_emb_list = []
 
-    for keys, column in feature_columns:
+    for keys, column in feature_columns.items():
         if is_embedding_column(column):
             sparse_emb = tf.expand_dims(tf.keras.layers.DenseFeatures(column)(features), axis=1)
             sparse_emb_list.append(sparse_emb)
