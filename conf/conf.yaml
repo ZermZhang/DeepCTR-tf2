@@ -17,84 +17,14 @@ dataset:
         label:
             type: float
         c1:
-            type: float
+            type: string
+            default: '0'
         c2:
-            type: float
+            type: string
+            default: '0'
         c3:
-            type: float
-#    schema:
-#        id:
-#            type: string
-#            default: '0'
-#        click:
-#            type: int
-#            default: 0
-#        hour:
-#            type: float
-#            default: 14102100.0
-#        C1:
-#            type: float
-#            default: 1005.0
-#        banner_pos:
-#            type: string
-#            default: '0'
-#        site_id:
-#            type: string
-#            default: '0'
-#        site_domain:
-#            type: string
-#            default: '0'
-#        site_category:
-#            type: string
-#            default: '0'
-#        app_id:
-#            type: string
-#            default: 'ecad2386'
-#        app_domain:
-#            type: string
-#            default: '7801e8d9'
-#        app_category:
-#            type: string
-#            default: '07d7df22'
-#        device_id:
-#            type: string
-#            default: 'a99f214a'
-#        device_ip:
-#            type: string
-#            default: 'ddd2926e'
-#        device_model:
-#            type: string
-#            default: '44956a24'
-#        device_type:
-#            type: float
-#            default: 0
-#        device_conn_type:
-#            type: float
-#            default: 0
-#        C14:
-#            type: float
-#            default: 0
-#        C15:
-#            type: float
-#            default: 0
-#        C16:
-#            type: float
-#            default: 0
-#        C17:
-#            type: float
-#            default: 0
-#        C18:
-#            type: float
-#            default: 0
-#        C19:
-#            type: float
-#            default: 0
-#        C20:
-#            type: float
-#            default: 0
-#        C21:
-#            type: float
-#            default: 0
+            type: string
+            default: '0'
 
 # the configure info for model
 model:

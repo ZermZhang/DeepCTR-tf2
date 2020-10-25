@@ -31,33 +31,43 @@
 ##          tf.feature_column.inicator_column(sparse_features_column)
 ##############################################################
 
-continuous_features:
-    c1:
-        normalizer:
-        boundaries:
-    c2:
-        normalizer:
-        boundaries:
-    c3:
-        normalizer:
-        boundaries:
+#continuous_features:
+#    c1:
+#        normalizer:
+#        boundaries:
+#    c2:
+#        normalizer:
+#        boundaries:
+#    c3:
+#        normalizer:
+#        boundaries:
 
-#sparse_features:
-#    s1:
-#        column_type: vocab_list
-#        params:
-#            vocabulary_list: ['0', '1', '2']
-#            default_value: 0
-#    s2:
-#        column_type: vocab_list
-#        params:
-#            vocabulary_list: ['4', '5', '6']
-#            default_value: 0
-#
-#embedding_features:
-#    s1:
-#        params:
-#            dimension: 10
-#    s2:
-#        params:
-#            dimension: 10
+sparse_features:
+    c1:
+        column_type: vocab_list
+        params:
+            vocabulary_list: ['1.0', '2.0', '3.0', '4.0', '5.0', '6.0']
+            default_value: 0
+    c2:
+        column_type: vocab_list
+        params:
+            vocabulary_list: ['1.0', '2.0', '3.0', '4.0', '5.0', '6.0']
+            default_value: 0
+
+    c3:
+        column_type: vocab_list
+        params:
+            vocabulary_list: ['1.0', '2.0', '3.0', '4.0', '5.0', '6.0']
+            default_value: 0
+
+embedding_features:
+    c1:
+        params:
+            dimension: 10
+    c2:
+        params:
+            dimension: 10
+
+    c3:
+        params:
+            dimension: 10

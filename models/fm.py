@@ -28,6 +28,7 @@ class FM(linear.Linear):
 
         # get the logits for the second order part
         dense_value_list, sparse_emb_list = feature_columns.input_from_feature_columns(input, self.deep_columns)
+        print(sparse_emb_list)
         sum_square = tf.square(tf.reduce_sum(sparse_emb_list, axis=1, keepdims=True))
         square_sum = tf.reduce_sum(sparse_emb_list * sparse_emb_list, axis=1, keepdims=True)
         second_order = square_sum - sum_square
