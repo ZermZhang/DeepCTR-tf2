@@ -24,15 +24,19 @@ class FM(linear.Linear):
 
     def call(self, input):
         # get the logits for the first order part
-        linear_logits = self.input_layers(input)
+        ori_linear_logits = self.input_layers(input)
+        linear_logits = self.get_dense_layers(ori_linear_logits)
 
         # get the logits for the second order part
         dense_value_list, sparse_emb_list = feature_columns.input_from_feature_columns(input, self.deep_columns)
-        print(sparse_emb_list)
+
+        sparse_emb_list = tf.keras.layers.Concatenate(axis=-1)(sparse_emb_list)
+        sparse_emb_list = tf.squeeze(sparse_emb_list, axis=1)
+
         sum_square = tf.square(tf.reduce_sum(sparse_emb_list, axis=1, keepdims=True))
         square_sum = tf.reduce_sum(sparse_emb_list * sparse_emb_list, axis=1, keepdims=True)
         second_order = square_sum - sum_square
-        second_order_logits = 0.5 * tf.reduce_sum(second_order, axis=2, keepdims=False)
+        second_order_logits = 0.5 * second_order
 
         return second_order_logits + linear_logits
 
