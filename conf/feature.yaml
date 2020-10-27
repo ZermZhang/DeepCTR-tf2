@@ -43,31 +43,167 @@
 #        boundaries:
 
 sparse_features:
-    c1:
-        column_type: vocab_list
+    id:
+        column_type: hash_bucket
         params:
-            vocabulary_list: ['1.0', '2.0', '3.0', '4.0', '5.0', '6.0']
-            default_value: 0
-    c2:
-        column_type: vocab_list
+            hash_bucket_size: 10000
+    hour:
+        column_type: hash_bucket
         params:
-            vocabulary_list: ['1.0', '2.0', '3.0', '4.0', '5.0', '6.0']
-            default_value: 0
+            hash_bucket_size: 1000
+    C1:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+    banner_pos:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 10
+    site_id:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 10
+    site_domain:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 10
+    site_category:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 5
+    app_id:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 50
+    app_domain:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 20
+    app_category:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 20
+    device_id:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 50
+    device_ip:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 1000
+    device_model:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 20
+    device_type:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 10
+    device_conn_type:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 10
+    C14:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+    C15:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+    C16:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+    C17:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+    C18:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+    C19:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+    C20:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+    C21:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
 
-    c3:
-        column_type: vocab_list
-        params:
-            vocabulary_list: ['1.0', '2.0', '3.0', '4.0', '5.0', '6.0']
-            default_value: 0
 
 embedding_features:
-    c1:
+    id:
         params:
-            dimension: 10
-    c2:
+            dimension: 8
+    hour:
         params:
-            dimension: 10
-
-    c3:
+            dimension: 4
+    C1:
         params:
-            dimension: 10
+            dimension: 2
+    banner_pos:
+        params:
+            dimension: 2
+    site_id:
+        params:
+            dimension: 2
+    site_domain:
+        params:
+            dimension: 2
+    site_category:
+        params:
+            dimension: 2
+    app_id:
+        params:
+            dimension: 2
+    app_domain:
+        params:
+            dimension: 2
+    app_category:
+        params:
+            dimension: 2
+    device_id:
+        params:
+            dimension: 2
+    device_ip:
+        params:
+            dimension: 4
+    device_model:
+        params:
+            dimension: 2
+    device_type:
+        params:
+            dimension: 2
+    device_conn_type:
+        params:
+            dimension: 2
+    C14:
+        params:
+            dimension: 2
+    C15:
+        params:
+            dimension: 2
+    C16:
+        params:
+            dimension: 2
+    C17:
+        params:
+            dimension: 2
+    C18:
+        params:
+            dimension: 2
+    C19:
+        params:
+            dimension: 2
+    C20:
+        params:
+            dimension: 2
+    C21:
+        params:
+            dimension: 2

@@ -193,4 +193,4 @@ def sequence_lr_runner():
 
 
 if __name__ == '__main__':
-    linear_runner()
+    drl.tester(CONFIG)

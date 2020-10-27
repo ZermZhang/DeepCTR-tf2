@@ -4,25 +4,85 @@
 
 # the configure info for datasets
 dataset:
-    train_path: D:/project/DeepCTR-tf2/datas/train/train
+    train_path: D:/project/DeepCTR-tf2/datas/train/train_data.txt
     test_path: ./datas/test/test_data.txt
     label_name: label
     type: csv
     batch_size: 32
     epoches: 10
     params:
-        header: False
+        header: True
         sep: ','
     schema:
+        id:
+            type: string
+            default: '0'
         label:
-            type: float
-        c1:
+            type: int
+        hour:
+            type: string
+            default: '14102100'
+        C1:
+            type: string
+            default: '1005'
+        banner_pos:
+            type: int
+            default: 0
+        site_id:
             type: string
             default: '0'
-        c2:
+        site_domain:
             type: string
             default: '0'
-        c3:
+        site_category:
+            type: string
+            default: '0'
+        app_id:
+            type: string
+            default: '0'
+        app_domain:
+            type: string
+            default: '0'
+        app_category:
+            type: string
+            default: '0'
+        device_id:
+            type: string
+            default: '0'
+        device_ip:
+            type: string
+            default: '0'
+        device_model:
+            type: string
+            default: '0'
+        device_type:
+            type: string
+            default: '0'
+        device_conn_type:
+            type: string
+            default: '0'
+        C14:
+            type: string
+            default: '0'
+        C15:
+            type: string
+            default: '0'
+        C16:
+            type: string
+            default: '0'
+        C17:
+            type: string
+            default: '0'
+        C18:
+            type: string
+            default: '0'
+        C19:
+            type: string
+            default: '0'
+        C20:
+            type: string
+            default: '0'
+        C21:
             type: string
             default: '0'
 
