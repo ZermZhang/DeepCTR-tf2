@@ -107,19 +107,6 @@ def get_feature_columns(CONFIG):
             )
             deep_columns[feature] = emb_col
 
-    # generate the feature columns for shared embedding features
-    # shared_embedding_columns is not supported in eager execution
-    # for feature, conf in shared_embedding_features_config.items():
-    #     columns = conf['categorical_columns']
-    #     assert set(columns).issubset(wide_columns), 'the columns: {} not all contain in sparse features'.format(columns)
-    #     columns = [wide_columns[column] for column in columns]
-    #     params = conf['params']
-    #     emb_col = _SUPPORTED_FEATURE_COLUMNS['shared_embeding'](
-    #         categorical_columns=columns,
-    #         **params
-    #     )
-    #     deep_columns[feature] = emb_col
-
     return wide_columns, deep_columns
 
 
