@@ -1,10 +1,9 @@
-from functools import wraps
-
 import tensorflow as tf
 
-from models import linear, mlp, cnn, wide_deep, lr, rnn, drl
+from models import mlp, cnn, lr, drl
 from datas import load_data
-from utils import config, runner, custom_layers, custom_losses
+from utils import config, runner
+import custom_losses
 
 # 获取模型的相关配置
 CONFIG = config.Config("./conf/")

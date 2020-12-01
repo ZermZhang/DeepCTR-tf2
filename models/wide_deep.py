@@ -12,9 +12,9 @@
 
 import tensorflow as tf
 
-from models import lr, mlp
 from datas import load_data
-from utils import runner, custom_layers
+from utils import runner
+import custom_layers
 from utils.model_utils import classes_activation_check
 
 
