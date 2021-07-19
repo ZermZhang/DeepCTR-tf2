@@ -1,14 +1,55 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 @File           : layers
 @Software       : PyCharm
-@Modify Time    : 2020/9/11 08:13     
+@Modify Time    : 2020/9/11 08:13
 @Author         : zermzhang
 @version        : 1.0
 @Desciption     : the utils functions for layers
 """
 import tensorflow as tf
+from tensorflow.python.ops import embedding_ops
+from tensorflow.python.ops import math_ops
+
+import pickle
+
+
+class PreTrainedEmbedding(tf.keras.layers.Layer):
+    def __init__(self, dim, file_path, **kwargs):
+        self.mask_zero = False
+        self.supports_masking = self.mask_zero
+        self.dim = dim
+        self.file_path = file_path
+        self.kernel = None
+        self.embeddings = None
+        super(PreTrainedEmbedding, self).__init__(**kwargs)
+
+    def build(self, input_shape):
+        self.kernel = self.add_weight(name='weight', shape=(2, self.dim), initializer='glorot_uniform')
+        with open(self.file_path, 'rb') as f:
+            self.embeddings = pickle.load(f)
+        self.embeddings = tf.convert_to_tensor(self.embeddings, dtype=tf.float32)
+        self.embeddings = tf.concat((self.kernel, self.embeddings), axis=0)
+        self.built = True
+
+    def call(self, inputs, **kwargs):
+        out = embedding_ops.embedding_lookup(self.embeddings, inputs)
+        return out
+
+    def compute_mask(self, inputs, mask=None):
+        if not self.mask_zero:
+            return None
+        return math_ops.not_equal(inputs, 0)
+
+    def compute_output_shape(self, input_shape):
+        output_shape = (input_shape[0], input_shape[1], self.dim)
+        return output_shape
+
+    def get_config(self):
+        base_config = super(PreTrainedEmbedding, self).get_config()
+        base_config['dim'] = self.dim
+        return base_config
 
 
 class LinearLayer(tf.keras.layers.Layer):
@@ -25,7 +66,7 @@ class LinearLayer(tf.keras.layers.Layer):
         self.w = self.add_variable(name='w', shape=[input_shape[-1], self.units], initializer=tf.zeros_initializer())
         self.b = self.add_variable(name='b', shape=[self.units], initializer=tf.zeros_initializer())
 
-    def call(self, inputs):
+    def call(self, inputs, **kwargs):
         y_pred = tf.matmul(inputs, self.w) + self.b
         return y_pred
 
@@ -85,4 +126,5 @@ class SequencePoolingLayer(tf.keras.layers.Layer):
     def get_config(self):
         config = {'mode': self.mode, 'support_masking': self.supports_masking}
         base_config = super(SequencePoolingLayer, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
+        return base_config.update(config)
+        # return dict(list(base_config.items()) + list(config.items()))
