@@ -1,0 +1,209 @@
+##############################################################
+## the configure info for feature in model
+##    the feature in feautre_config must be appeared in dataset
+##
+## continuous features:
+##      the features ==> tf.feature_column.numeric_column
+## sparse_features:
+##      the features ==> tf.feature_column.{column}
+##      the params in sparse_features config should be same as the input params for colmn
+##
+## the params for sparse_features:
+##      {feature_name}:
+##          columnn_type: [vocab_file, hash_bucket, identity, vocab_list]
+##          params: {the params for feature column inputs}
+##
+## A example for sparse_features config:
+##    sparse_features:
+##        s1:
+##            column_type: vocab_list
+##            params:
+##                vocabulary_list: ['0', '1', '2']
+##                default_value: 0
+##
+## embedding_features AND shared_embedding_features:
+##      should be appeared in sparse_features:
+##      embedding_features:
+##          tf.feature_column.embedding_column(sparse_features_column)
+##      shared_embedding_features:
+##          tf.feature_column.shared_embedding_column(sparse_features_column)
+##      indicator_column:
+##          tf.feature_column.inicator_column(sparse_features_column)
+##############################################################
+
+#continuous_features:
+#    c1:
+#        normalizer:
+#        boundaries:
+#    c2:
+#        normalizer:
+#        boundaries:
+#    c3:
+#        normalizer:
+#        boundaries:
+
+sparse_features:
+    id:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 10000
+    hour:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 1000
+    C1:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+    banner_pos:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 10
+    site_id:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 10
+    site_domain:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 10
+    site_category:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 5
+    app_id:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 50
+    app_domain:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 20
+    app_category:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 20
+    device_id:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 50
+    device_ip:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 1000
+    device_model:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 20
+    device_type:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 10
+    device_conn_type:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 10
+    C14:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+    C15:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+    C16:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+    C17:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+    C18:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+    C19:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+    C20:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+    C21:
+        column_type: hash_bucket
+        params:
+            hash_bucket_size: 100
+
+
+embedding_features:
+    id:
+        params:
+            dimension: 8
+    hour:
+        params:
+            dimension: 4
+    C1:
+        params:
+            dimension: 2
+    banner_pos:
+        params:
+            dimension: 2
+    site_id:
+        params:
+            dimension: 2
+    site_domain:
+        params:
+            dimension: 2
+    site_category:
+        params:
+            dimension: 2
+    app_id:
+        params:
+            dimension: 2
+    app_domain:
+        params:
+            dimension: 2
+    app_category:
+        params:
+            dimension: 2
+    device_id:
+        params:
+            dimension: 2
+    device_ip:
+        params:
+            dimension: 4
+    device_model:
+        params:
+            dimension: 2
+    device_type:
+        params:
+            dimension: 2
+    device_conn_type:
+        params:
+            dimension: 2
+    C14:
+        params:
+            dimension: 2
+    C15:
+        params:
+            dimension: 2
+    C16:
+        params:
+            dimension: 2
+    C17:
+        params:
+            dimension: 2
+    C18:
+        params:
+            dimension: 2
+    C19:
+        params:
+            dimension: 2
+    C20:
+        params:
+            dimension: 2
+    C21:
+        params:
+            dimension: 2

@@ -1,9 +1,9 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 @File           : config
 @Software       : PyCharm
-@Modify Time    : 2020/9/6 20:49     
+@Modify Time    : 2020/9/6 20:49
 @Author         : zermzhang
 @version        : 1.0
 @Desciption     : parsing the config file
@@ -73,11 +73,6 @@ class Config(object):
         params = dataset_config.get('params', {'head': True, 'sep': ','})
         return params
 
-    def read_data_schema(self):
-        dataset_config = self.dataset_config
-        schema = dataset_config.get('schema', {})
-        return schema
-
     def read_data_batch_size(self):
         dataset_config = self.dataset_config
         batch_size = dataset_config.get('batch_size', 128)
@@ -88,10 +83,15 @@ class Config(object):
         epochs = dataset_config.get('epochs', 10)
         return epochs
 
+    # parser the feature column info
+    def read_data_schema(self):
+        schema = list(self.feature_config.keys())
+        return schema
+
     def get_column_default(self):
-        schema = self.read_data_schema()
-        column_names = list(schema.keys())
+        column_names = []
         column_defaults = []
+        valid_columns = []
 
         def get_default_value(dtype):
             if (not dtype) or (dtype == 'string'):
@@ -103,15 +103,16 @@ class Config(object):
             else:
                 raise Exception('dtype: {} is not supported'.format(dtype))
 
-        for name, value in schema.items():
+        for name, value in self.feature_config.items():
             if value.get('default', None) is not None:
                 column_defaults.append(value['default'])
             else:
                 column_defaults.append(get_default_value(value['type']))
+            if value.get('params', None) is not None:
+                valid_columns.append(name)
 
-        return column_names, column_defaults
+        return column_names, column_defaults, valid_columns
 
-    # parser the feature column info
     def get_continuous_features_config(self):
         return self.feature_config.get('continuous_features', None)
 

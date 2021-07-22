@@ -1,12 +1,12 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 @File           : load_data
 @Software       : PyCharm
-@Modify Time    : 2020/9/1 19:24     
+@Modify Time    : 2020/9/1 19:24
 @Author         : zermzhang
 @version        : 1.0
-@Desciption     : 
+@Desciption     :
 """
 import numpy as np
 import pandas as pd
@@ -99,7 +99,7 @@ class CustomDataLoader(object):
         self.params = CONFIG.read_data_params()
         self.label_name = self.dataset_config.get('label_name', None)
         assert self.label_name is not None
-        self.column_names, self.column_defaults = CONFIG.get_column_default()
+        self.column_names, self.column_defaults, self.valid_columns = CONFIG.get_column_default()
 
     def _parse_csv(self):
         column_names = self.column_names
@@ -108,10 +108,10 @@ class CustomDataLoader(object):
 
         def parser(value):
             columns = tf.io.decode_csv(value, record_defaults=column_defaults, field_delim=field_delim)
-            features = dict(zip(column_names, columns))
+            features = {key: value for key, value in dict(zip(column_names, columns)).items() if key in self.valid_columns}
             label = features.pop(self.label_name)
             return features, label
-        
+
         return parser
 
     def input_fn(self, batch_size, epochs):
