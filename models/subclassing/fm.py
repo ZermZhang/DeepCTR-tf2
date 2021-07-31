@@ -11,7 +11,7 @@
 
 import tensorflow as tf
 
-from models import linear
+from models.subclassing import linear
 from utils import feature_columns, config
 from datas import load_data
 

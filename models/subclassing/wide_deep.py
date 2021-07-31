@@ -14,7 +14,7 @@ import tensorflow as tf
 
 from datas import load_data
 from utils import runner
-import custom_layers
+from custom_utils import custom_layers
 from utils.model_utils import classes_activation_check
 
 
