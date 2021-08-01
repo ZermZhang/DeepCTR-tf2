@@ -10,6 +10,8 @@
 """
 
 import tensorflow as tf
+from utils.feature_builder import FeatureColumnBuilder
+from utils.config import Config
 
 
 class MLP(tf.keras.Model):
@@ -19,7 +21,7 @@ class MLP(tf.keras.Model):
         self.dense1 = tf.keras.layers.Dense(units=100, activation=tf.nn.relu)
         self.dense2 = tf.keras.layers.Dense(units=10)
 
-    def call(self, inputs):
+    def call(self, inputs, training=None, mask=None):
         x = self.flatten(inputs)
         x = self.dense1(x)
         x = self.dense2(x)
@@ -28,10 +30,14 @@ class MLP(tf.keras.Model):
 
 
 class DNN(tf.keras.Model):
-    def __init__(self, config):
+    def __init__(self, config: Config, feature_builder: FeatureColumnBuilder):
         super(DNN, self).__init__()
         self.classes = config.model_config['classes']
         self.deep_params = config.deep_model_config
+
+        self.feature_builder = feature_builder
+
+        self.input_layer = tf.keras.layers.DenseFeatures(self.feature_builder.feature_columns.values())
         self.activation = tf.keras.activations.get(self.deep_params['activation'])
         self.flatten = tf.keras.layers.Flatten()
         self.hidden_layers = []
@@ -39,12 +45,16 @@ class DNN(tf.keras.Model):
             self.hidden_layers.append(tf.keras.layers.Dense(units=unit_num, activation=self.activation))
         self.output_layers = tf.keras.layers.Dense(units=self.classes, activation='softmax')
 
-    def call(self, inputs):
-        x = self.flatten(inputs)
+    def call(self, inputs, training=None, mask=None):
+        x = self.input_layer(inputs)
         for hidden_layer in self.hidden_layers:
             x = hidden_layer(x)
         output = self.output_layers(x)
         return output
+
+    def build_graph(self, input_shape=None):
+        input_ = self.feature_builder.inputs_list
+        return tf.keras.models.Model(inputs=[input_], outputs=self.call(input_))
 
 
 def sequence_mlp():

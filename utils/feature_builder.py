@@ -95,7 +95,7 @@ class FeatureColumnBuilder:
     def __init__(self, config: dict, **kwargs):
         self.config = config
         self.feature_columns = {}
-        self.inputs_list = []
+        self.inputs_list = {}
         self.batch_size = kwargs.get('batch_size', 512)
 
     def feature_builder(self):
@@ -115,6 +115,7 @@ class FeatureColumnBuilder:
                     embed_params=embed_params
                 )
                 self.feature_columns[feature_name] = feature_builder()
+                self.inputs_list[feature_name] = feature_builder.inputs
             elif feature_type == 'vocabulary':
                 feature_builder = VocabEmbeddingBuilder(
                     feature_name=feature_name,
@@ -125,6 +126,7 @@ class FeatureColumnBuilder:
                     embed_params=embed_params
                 )
                 self.feature_columns[feature_name] = feature_builder()
+                self.inputs_list[feature_name] = feature_builder.inputs
             elif feature_type == 'numerical':
                 feature_builder = NumericalBuilder(
                     feature_name=feature_name,
@@ -135,6 +137,7 @@ class FeatureColumnBuilder:
                     embed_params=embed_params
                 )
                 self.feature_columns[feature_name] = feature_builder()
+                self.inputs_list[feature_name] = feature_builder.inputs
             elif feature_type == 'pre-trained':
                 pass
             elif feature_type == 'crossed':
