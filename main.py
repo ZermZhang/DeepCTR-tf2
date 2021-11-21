@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from models.subclassing import cnn, drl, lr, mlp
+from subclassing import cnn, drl, lr, mlp
 from datas import load_data
 from utils import config, runner
 import custom_losses

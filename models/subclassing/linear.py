@@ -1,9 +1,9 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 @File           : linear
 @Software       : PyCharm
-@Modify Time    : 2020/8/31 21:23     
+@Modify Time    : 2020/8/31 21:23
 @Author         : zermzhang
 @version        : 1.0
 @Desciption     : the linear model under tf2.0-keras
@@ -146,7 +146,7 @@ def linear_base_runner():
 
 
 if __name__ == "__main__":
-    CONFIG = config.Config('./conf/')
+    CONFIG = config.Config('../../conf/')
     wide_columns, deep_columns = feature_columns.get_feature_columns(CONFIG)
     print(wide_columns, deep_columns)
     if not wide_columns and not deep_columns:

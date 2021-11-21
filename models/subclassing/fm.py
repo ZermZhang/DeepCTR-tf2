@@ -1,9 +1,9 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 @File           : fm
 @Software       : PyCharm
-@Modify Time    : 2020/10/22 08:44     
+@Modify Time    : 2020/10/22 08:44
 @Author         : zermzhang
 @version        : 1.0
 @Desciption     : the code for FM model
@@ -11,7 +11,7 @@
 
 import tensorflow as tf
 
-from models.subclassing import linear
+from subclassing import linear
 from utils import feature_columns, config
 from datas import load_data
 
@@ -68,6 +68,6 @@ def fm_runner(CONFIG, deep_columns):
 
 
 if __name__ == "__main__":
-    CONFIG = config.Config('./conf/')
+    CONFIG = config.Config('../../conf/')
     wide_columns, deep_columns = feature_columns.get_feature_columns(CONFIG)
     fm_runner(CONFIG, deep_columns)
