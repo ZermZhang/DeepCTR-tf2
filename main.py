@@ -1,9 +1,9 @@
 import tensorflow as tf
 
-from subclassing import cnn, drl, lr, mlp
+from models.subclassing import cnn, drl, lr, mlp
 from datas import load_data
 from utils import config, runner
-import custom_losses
+from custom_utils import custom_losses
 
 # 获取模型的相关配置
 CONFIG = config.Config("./conf/")
