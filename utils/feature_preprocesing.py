@@ -25,37 +25,50 @@
 import tensorflow as tf
 from tensorflow.keras.layers.experimental import preprocessing
 from tensorflow.keras import layers
-from tensorflow.python.framework.dtypes import DType
 
 
 class FeatureBaseBuilder:
-    def __init__(self, dims: int, batch_size: int, dtype: DType,
-                 feature_params: dict, embed_params: dict):
+    """
+    feature_params: the params for preprocessingLayer for input features
+    emb_layer_params: the params for embedding layer
+    use_emb_layer: use the layers.Embedding or not
+        when yes: return the embedding features
+        when no: return the feature after preprocessing layer
+    """
+    def __init__(self, feature_params: dict, emb_layer_params: dict,
+                 use_emb_layer: bool = True):
         self.feature_params = feature_params
-        self.embed_params = embed_params
-        self.dim = dims
-        self.inputs = tf.keras.Input(shape=(batch_size, dims), dtype=dtype)
+        self.emb_layer_params = emb_layer_params
+        self.use_emb_layer = use_emb_layer
 
     def input_layer(self):
-        return preprocessing.PreprocessingLayer(**self.feature_params)(self.inputs)
+        return preprocessing.PreprocessingLayer(**self.feature_params)
 
-    def __call__(self, *args, **kwargs):
-        return layers.Embedding(**self.embed_params)(self.input_layer())
+    def __call__(self, inputs):
+        if self.use_emb_layer:
+            return layers.Embedding(**self.emb_layer_params)(self.input_layer()(inputs))
+        else:
+            return self.input_layer()(inputs)
 
 
 class HashEmbeddingBuilder(FeatureBaseBuilder):
     def input_layer(self):
-        return preprocessing.Hashing(**self.feature_params)(self.inputs)
+        return preprocessing.Hashing(**self.feature_params)
 
 
 class VocabEmbeddingBuilder(FeatureBaseBuilder):
     def input_layer(self):
-        return preprocessing.StringLookup(**self.feature_params)(self.inputs)
+        return preprocessing.StringLookup(**self.feature_params)
 
 
 class NumericalBuilder(FeatureBaseBuilder):
     def input_layer(self):
-        return preprocessing.Discretization(**self.feature_params)(self.inputs)
+        return preprocessing.Discretization(**self.feature_params)
+
+
+class CrossedBuilder(FeatureBaseBuilder):
+    def input_layer(self):
+        return tf.keras.layers.experimental.preprocessing.HashedCrossing(**self.feature_params)
 
 
 class FeatureProcess:
@@ -64,7 +77,7 @@ class FeatureProcess:
         self.dims = dims
         self.features_embed_layers = {}
 
-    def feautre_builder(self):
+    def feautre_builder(self) -> None:
         for feature_name, feature_config in self.config.items():
             if feature_config['feature_type'] == 'hashing':
                 self.features_embed_layers[feature_name] = HashEmbeddingBuilder(
@@ -79,8 +92,12 @@ class FeatureProcess:
                     **feature_config['config']
                 )
             elif feature_config['feature_type'] == 'pre-trained':
+                raise Exception("There is no preprocessing layer for type: {}".format(feature_config['feature_type']))
                 pass
             elif feature_config['feature_type'] == 'crossed':
-                pass
+                self.features_embed_layers[feature_name] = CrossedBuilder(
+                    **feature_config['config']
+                )
             else:
+                raise Exception("There is no preprocessing layer for type: {}".format(feature_config['feature_type']))
                 pass
