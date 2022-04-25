@@ -21,12 +21,16 @@ class MLP(tf.keras.Model):
         self.dense1 = tf.keras.layers.Dense(units=100, activation=tf.nn.relu)
         self.dense2 = tf.keras.layers.Dense(units=10)
 
-    def call(self, inputs, training=None, mask=None):
+    def call(self, inputs):
         x = self.flatten(inputs)
         x = self.dense1(x)
         x = self.dense2(x)
         output = tf.nn.softmax(x)
         return output
+
+    def build_graph(self, input_shape):
+        input_ = tf.keras.Input(shape=input_shape)
+        return tf.keras.models.Model(inputs=[input_], outputs=self.call(input_))
 
 
 class DNN(tf.keras.Model):

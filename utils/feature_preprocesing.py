@@ -26,6 +26,9 @@ import tensorflow as tf
 from tensorflow.keras.layers.experimental import preprocessing
 from tensorflow.keras import layers
 
+from datas.load_data import CustomDataLoader
+from utils.config import Config
+
 
 class FeatureBaseBuilder:
     """
@@ -72,9 +75,8 @@ class CrossedBuilder(FeatureBaseBuilder):
 
 
 class FeatureProcess:
-    def __init__(self, config: dict, dims: int, **kwargs):
+    def __init__(self, config: dict):
         self.config = config
-        self.dims = dims
         self.features_embed_layers = {}
 
     def feautre_builder(self) -> None:
@@ -101,3 +103,13 @@ class FeatureProcess:
             else:
                 raise Exception("There is no preprocessing layer for type: {}".format(feature_config['feature_type']))
                 pass
+
+
+if __name__ == '__main__':
+    CONFIG = Config('./conf/')
+    train_path = CONFIG.read_data_path('train')
+    batch_size = CONFIG.read_data_batch_size()
+    epochs = CONFIG.read_data_epochs()
+    ds = CustomDataLoader(CONFIG, train_path).input_fn(batch_size=batch_size, epochs=epochs)
+
+    print(list(ds.as_numpy_iterator())[0])
