@@ -74,6 +74,42 @@ class CrossedBuilder(FeatureBaseBuilder):
         return tf.keras.layers.experimental.preprocessing.HashedCrossing(**self.feature_params)
 
 
+class EncodedFeatureBuilder:
+    def __init__(self, config: dict):
+        self.config = config
+        self.all_inputs = []
+        self.encoded_features = []
+
+    def feature_builder(self) -> None:
+        for feature_name, feature_config in self.config.items():
+            if feature_config['feature_type'] == 'hashing':
+                input_col = tf.keras.Input(shape=(1,), name=feature_name, dtype=tf.string)
+                encoding_layer = HashEmbeddingBuilder(**feature_config['config'])
+                self.all_inputs.append(input_col)
+                self.encoded_features.append(encoding_layer(input_col))
+            elif feature_config['feature_type'] == 'vocabulary':
+                input_col = tf.keras.Input(shape=(1,), name=feature_name, dtype=tf.string)
+                encoding_layer = VocabEmbeddingBuilder(**feature_config['config'])
+                self.all_inputs.append(input_col)
+                self.encoded_features.append(encoding_layer(input_col))
+            elif feature_config['feature_type'] == 'numerical':
+                input_col = tf.keras.Input(shape=(1,), name=feature_name, dtype=tf.string)
+                encoding_layer = NumericalBuilder(**feature_config['config'])
+                self.all_inputs.append(input_col)
+                self.encoded_features.append(encoding_layer(input_col))
+            elif feature_config['feature_type'] == 'pre-trained':
+                raise Exception("There is no preprocessing layer for type: {}".format(feature_config['feature_type']))
+                pass
+            elif feature_config['feature_type'] == 'crossed':
+                input_col = tf.keras.Input(shape=(1,), name=feature_name, dtype=tf.string)
+                encoding_layer = CrossedBuilder(**feature_config['config'])
+                self.all_inputs.append(input_col)
+                self.encoded_features.append(encoding_layer(input_col))
+            else:
+                raise Exception("There is no preprocessing layer for type: {}".format(feature_config['feature_type']))
+                pass
+
+
 class FeatureProcess:
     def __init__(self, config: dict):
         self.config = config
