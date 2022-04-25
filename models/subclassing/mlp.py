@@ -31,6 +31,15 @@ class MLP(tf.keras.Model):
     def build_graph(self, input_shape):
         input_ = tf.keras.Input(shape=input_shape)
         return tf.keras.models.Model(inputs=[input_], outputs=self.call(input_))
+# how to summary the model struct
+# test_model = MLP()
+# test_model.build_graph(input_shape=(16,)).summary()
+# how to plot the model struct
+# tf.keras.utils.plot_model(
+#     test_model.build_graph(input_shape=(16, )),
+#     to_file='./test_model.png',
+#     show_shapes=True
+# )
 
 
 class DNN(tf.keras.Model):
