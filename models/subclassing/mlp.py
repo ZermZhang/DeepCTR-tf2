@@ -10,9 +10,10 @@
 """
 
 import tensorflow as tf
+
 from utils.feature_builder import FeatureColumnBuilder
-from utils.feature_preprocesing import EncodedFeatureBuilder
 from utils.config import Config
+from custom_utils.custom_layers import EncodedFeatureBuilder
 
 
 """
@@ -85,14 +86,14 @@ class DNN(tf.keras.Model):
             self.hidden_layers.append(tf.keras.layers.Dense(units=unit_num, activation=self.activation))
         self.output_layers = tf.keras.layers.Dense(units=self.classes, activation='softmax')
 
-    def call(self, inputs, training=None, mask=None):
+    def call(self, inputs):
         x = self.input_layer(inputs)
         for hidden_layer in self.hidden_layers:
             x = hidden_layer(x)
         output = self.output_layers(x)
         return output
 
-    def build_graph(self, input_shape=None):
+    def build_graph(self):
         input_ = self.feature_builder.inputs_list
         return tf.keras.models.Model(inputs=[input_], outputs=self.call(input_))
 

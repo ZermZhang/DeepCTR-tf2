@@ -8,11 +8,16 @@
 @version        : 1.0
 @Desciption     : the utils functions for layers
 """
+import pickle
+
 import tensorflow as tf
 from tensorflow.python.ops import embedding_ops
 from tensorflow.python.ops import math_ops
 
-import pickle
+from utils.feature_preprocesing import (
+    HashEmbeddingBuilder, NumericalBuilder,
+    VocabEmbeddingBuilder, CrossedBuilder
+)
 
 
 class PreTrainedEmbedding(tf.keras.layers.Layer):
@@ -128,3 +133,55 @@ class SequencePoolingLayer(tf.keras.layers.Layer):
         base_config = super(SequencePoolingLayer, self).get_config()
         return base_config.update(config)
         # return dict(list(base_config.items()) + list(config.items()))
+
+
+class EncodedFeatureBuilder:
+    @staticmethod
+    def build_encoded_features(feature_config):
+        feature_encoder_type = feature_config['type']
+        feature_encoder_params = feature_config['config']
+        feature_embedding_params = feature_config.get('embed_config', None)
+        if feature_encoder_type == 'hashing':
+            encoding_layer = HashEmbeddingBuilder(
+                feature_params=feature_encoder_params,
+                emb_params=feature_embedding_params
+            )
+            return encoding_layer
+        elif feature_encoder_type == 'vocabulary':
+            encoding_layer = VocabEmbeddingBuilder(
+                feature_params=feature_encoder_params,
+                emb_params=feature_embedding_params
+            )
+            return encoding_layer
+        elif feature_encoder_type == 'numerical':
+            encoding_layer = NumericalBuilder(
+                feature_params=feature_encoder_params,
+                emb_params=feature_embedding_params
+            )
+            return encoding_layer
+        elif feature_encoder_type == 'pre-trained':
+            raise Exception("There is no preprocessing layer for type: {}".format(feature_encoder_type))
+            pass
+        elif feature_encoder_type == 'crossed':
+            encoding_layer = CrossedBuilder(
+                feature_params=feature_encoder_params,
+                emb_params=feature_embedding_params
+            )
+            return encoding_layer
+        else:
+            raise Exception("There is no preprocessing layer for type: {}".format(feature_encoder_type))
+            pass
+
+    @staticmethod
+    def build_inputs(feature_name, feature_config):
+        feature_encoder_type = feature_config['type']
+        if feature_encoder_type in ('hashing', 'vocabulary'):
+            input_col = tf.keras.Input(shape=(1,), name=feature_name, dtype=tf.string)
+            return input_col
+        elif feature_encoder_type in {'numerical'}:
+            input_col = tf.keras.Input(shape=(1,), name=feature_name, dtype=tf.float32)
+            return input_col
+        else:
+            raise Exception("There is no preprocessing layer for type: {}".format(feature_encoder_type))
+            pass
+

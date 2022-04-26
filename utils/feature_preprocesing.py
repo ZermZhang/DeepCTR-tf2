@@ -26,9 +26,6 @@ import tensorflow as tf
 from tensorflow.keras.layers.experimental import preprocessing
 from tensorflow.keras import layers
 
-from datas.load_data import CustomDataLoader
-from utils.config import Config
-
 
 class FeatureBaseBuilder:
     """
@@ -87,95 +84,3 @@ class NumericalBuilder(FeatureBaseBuilder):
 class CrossedBuilder(FeatureBaseBuilder):
     def input_layer(self):
         return tf.keras.layers.experimental.preprocessing.HashedCrossing(**self.feature_params)
-
-
-class EncodedFeatureBuilder:
-    @staticmethod
-    def build_encoded_features(feature_config):
-        feature_encoder_type = feature_config['type']
-        feature_encoder_params = feature_config['config']
-        feature_embedding_params = feature_config.get('embed_config', None)
-        if feature_encoder_type == 'hashing':
-            encoding_layer = HashEmbeddingBuilder(
-                feature_params=feature_encoder_params,
-                emb_params=feature_embedding_params
-            )
-            return encoding_layer
-        elif feature_encoder_type == 'vocabulary':
-            encoding_layer = VocabEmbeddingBuilder(
-                feature_params=feature_encoder_params,
-                emb_params=feature_embedding_params
-            )
-            return encoding_layer
-        elif feature_encoder_type == 'numerical':
-            encoding_layer = NumericalBuilder(
-                feature_params=feature_encoder_params,
-                emb_params=feature_embedding_params
-            )
-            return encoding_layer
-        elif feature_encoder_type == 'pre-trained':
-            raise Exception("There is no preprocessing layer for type: {}".format(feature_encoder_type))
-            pass
-        elif feature_encoder_type == 'crossed':
-            encoding_layer = CrossedBuilder(
-                feature_params=feature_encoder_params,
-                emb_params=feature_embedding_params
-            )
-            return encoding_layer
-        else:
-            raise Exception("There is no preprocessing layer for type: {}".format(feature_encoder_type))
-            pass
-
-    @staticmethod
-    def build_inputs(feature_name, feature_config):
-        feature_encoder_type = feature_config['type']
-        if feature_encoder_type in ('hashing', 'vocabulary'):
-            input_col = tf.keras.Input(shape=(1,), name=feature_name, dtype=tf.string)
-            return input_col
-        elif feature_encoder_type in {'numerical'}:
-            input_col = tf.keras.Input(shape=(1,), name=feature_name, dtype=tf.float32)
-            return input_col
-        else:
-            raise Exception("There is no preprocessing layer for type: {}".format(feature_encoder_type))
-            pass
-
-
-class FeatureProcess:
-    def __init__(self, config: dict):
-        self.config = config
-        self.features_embed_layers = {}
-
-    def feautre_builder(self) -> None:
-        for feature_name, feature_config in self.config.items():
-            if feature_config['type'] == 'hashing':
-                self.features_embed_layers[feature_name] = HashEmbeddingBuilder(
-                    **feature_config['config']
-                )
-            elif feature_config['type'] == 'vocabulary':
-                self.features_embed_layers[feature_name] = VocabEmbeddingBuilder(
-                    **feature_config['config']
-                )
-            elif feature_config['type'] == 'numerical':
-                self.features_embed_layers[feature_name] = NumericalBuilder(
-                    **feature_config['config']
-                )
-            elif feature_config['type'] == 'pre-trained':
-                raise Exception("There is no preprocessing layer for type: {}".format(feature_config['feature_type']))
-                pass
-            elif feature_config['type'] == 'crossed':
-                self.features_embed_layers[feature_name] = CrossedBuilder(
-                    **feature_config['config']
-                )
-            else:
-                raise Exception("There is no preprocessing layer for type: {}".format(feature_config['feature_type']))
-                pass
-
-
-if __name__ == '__main__':
-    CONFIG = Config('./conf/')
-    train_path = CONFIG.read_data_path('train')
-    batch_size = CONFIG.read_data_batch_size()
-    epochs = CONFIG.read_data_epochs()
-    ds = CustomDataLoader(CONFIG, train_path).input_fn(batch_size=batch_size, epochs=epochs)
-
-    print(list(ds.as_numpy_iterator())[0])
