@@ -11,6 +11,7 @@
 
 import tensorflow as tf
 from utils.feature_builder import FeatureColumnBuilder
+from utils.feature_preprocesing import EncodedFeatureBuilder
 from utils.config import Config
 
 
@@ -25,24 +26,36 @@ tf.keras.utils.plot_model(model.build_graph(), to_file='./test_model.png', show_
 
 
 class MLP(tf.keras.Model):
-    def __init__(self, feature_encoder):
+    def __init__(self, config):
         super(MLP, self).__init__()
+        # init the feature config info
+        self.config = config
+        # definite the layers
+        self.feature_encoder_layers = EncodedFeatureBuilder()
         self.dense_layer = tf.keras.layers.Dense(32, activation='relu')
         self.dropout_layer = tf.keras.layers.Dropout(0.5)
         self.output_layer = tf.keras.layers.Dense(1)
-        self.feature_encoder = feature_encoder
 
     def call(self, inputs):
-        x = tf.keras.layers.concatenate(inputs)
+        encoded_features = []
+        for feature_name, feature_config in self.config.items():
+            encoded_features.append(
+                self.feature_encoder_layers.build_encoded_features(feature_config)(inputs[feature_name])
+            )
+        x = tf.keras.layers.concatenate(encoded_features)
         x = self.dense_layer(x)
         x = self.dropout_layer(x)
         x = self.output_layer(x)
         return x
 
-    def build_graph(self, shapes=None):
+    def build_graph(self):
+        all_inputs = {}
+        for feature_name, feature_config in self.config.items():
+            all_inputs[feature_name] = self.feature_encoder_layers.build_inputs(feature_name, feature_config)
         return tf.keras.models.Model(
-            inputs=self.feature_encoder.all_inputs,
-            outputs=self.call(self.feature_encoder.encoded_features))
+            inputs=all_inputs,
+            outputs=self.call(all_inputs)
+        )
 
 
 # how to summary the model struct
