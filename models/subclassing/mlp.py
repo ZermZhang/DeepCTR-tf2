@@ -14,23 +14,37 @@ from utils.feature_builder import FeatureColumnBuilder
 from utils.config import Config
 
 
+"""
+MLP模型，和utils.feature_preprocessing.EncodedFeatureBuilder联动，已经调通
+model = MLP(feature_encoder)
+model.build_graph().summary()
+
+tf.keras.utils.plot_model(model.build_graph(), to_file='./test_model.png', show_shapes=True)
+
+"""
+
+
 class MLP(tf.keras.Model):
-    def __init__(self):
+    def __init__(self, feature_encoder):
         super(MLP, self).__init__()
-        self.flatten = tf.keras.layers.Flatten()
-        self.dense1 = tf.keras.layers.Dense(units=100, activation=tf.nn.relu)
-        self.dense2 = tf.keras.layers.Dense(units=10)
+        self.dense_layer = tf.keras.layers.Dense(32, activation='relu')
+        self.dropout_layer = tf.keras.layers.Dropout(0.5)
+        self.output_layer = tf.keras.layers.Dense(1)
+        self.feature_encoder = feature_encoder
 
     def call(self, inputs):
-        x = self.flatten(inputs)
-        x = self.dense1(x)
-        x = self.dense2(x)
-        output = tf.nn.softmax(x)
-        return output
+        x = tf.keras.layers.concatenate(inputs)
+        x = self.dense_layer(x)
+        x = self.dropout_layer(x)
+        x = self.output_layer(x)
+        return x
 
-    def build_graph(self, input_shape):
-        input_ = tf.keras.Input(shape=input_shape)
-        return tf.keras.models.Model(inputs=[input_], outputs=self.call(input_))
+    def build_graph(self, shapes=None):
+        return tf.keras.models.Model(
+            inputs=self.feature_encoder.all_inputs,
+            outputs=self.call(self.feature_encoder.encoded_features))
+
+
 # how to summary the model struct
 # test_model = MLP()
 # test_model.build_graph(input_shape=(16,)).summary()

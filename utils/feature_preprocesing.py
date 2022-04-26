@@ -38,10 +38,10 @@ class FeatureBaseBuilder:
         when yes: return the embedding features
         when no: return the feature after preprocessing layer
     """
-    def __init__(self, feature_params: dict, emb_layer_params: dict,
+    def __init__(self, feature_params: dict, emb_params: dict = None,
                  use_emb_layer: bool = True):
         self.feature_params = feature_params
-        self.emb_layer_params = emb_layer_params
+        self.emb_params = emb_params
         self.use_emb_layer = use_emb_layer
 
     def input_layer(self):
@@ -49,7 +49,21 @@ class FeatureBaseBuilder:
 
     def __call__(self, inputs):
         if self.use_emb_layer:
-            return layers.Embedding(**self.emb_layer_params)(self.input_layer()(inputs))
+            if self.emb_params:
+                return layers.Embedding(**self.emb_params)(self.input_layer()(inputs))
+            else:
+                input_dim = (
+                    self.feature_params['num_bins']
+                    if 'num_bins' in self.feature_params else
+                    len(self.feature_params['bin_boundaries'])
+                )
+
+                emb_params = {
+                    'input_dim': input_dim,
+                    'output_dim': 8
+                }
+                return layers.Embedding(**emb_params)(self.input_layer()(inputs))
+
         else:
             return self.input_layer()(inputs)
 
@@ -79,30 +93,31 @@ class EncodedFeatureBuilder:
         self.config = config
         self.all_inputs = []
         self.encoded_features = []
+        self.feature_builder()
 
     def feature_builder(self) -> None:
         for feature_name, feature_config in self.config.items():
-            if feature_config['feature_type'] == 'hashing':
+            if feature_config['type'] == 'hashing':
                 input_col = tf.keras.Input(shape=(1,), name=feature_name, dtype=tf.string)
-                encoding_layer = HashEmbeddingBuilder(**feature_config['config'])
+                encoding_layer = HashEmbeddingBuilder(feature_params=feature_config['config'])
                 self.all_inputs.append(input_col)
                 self.encoded_features.append(encoding_layer(input_col))
-            elif feature_config['feature_type'] == 'vocabulary':
+            elif feature_config['type'] == 'vocabulary':
                 input_col = tf.keras.Input(shape=(1,), name=feature_name, dtype=tf.string)
-                encoding_layer = VocabEmbeddingBuilder(**feature_config['config'])
+                encoding_layer = VocabEmbeddingBuilder(feature_params=feature_config['config'])
                 self.all_inputs.append(input_col)
                 self.encoded_features.append(encoding_layer(input_col))
-            elif feature_config['feature_type'] == 'numerical':
+            elif feature_config['type'] == 'numerical':
                 input_col = tf.keras.Input(shape=(1,), name=feature_name, dtype=tf.string)
-                encoding_layer = NumericalBuilder(**feature_config['config'])
+                encoding_layer = NumericalBuilder(feature_params=feature_config['config'])
                 self.all_inputs.append(input_col)
                 self.encoded_features.append(encoding_layer(input_col))
-            elif feature_config['feature_type'] == 'pre-trained':
+            elif feature_config['type'] == 'pre-trained':
                 raise Exception("There is no preprocessing layer for type: {}".format(feature_config['feature_type']))
                 pass
-            elif feature_config['feature_type'] == 'crossed':
+            elif feature_config['type'] == 'crossed':
                 input_col = tf.keras.Input(shape=(1,), name=feature_name, dtype=tf.string)
-                encoding_layer = CrossedBuilder(**feature_config['config'])
+                encoding_layer = CrossedBuilder(feature_params=feature_config['config'])
                 self.all_inputs.append(input_col)
                 self.encoded_features.append(encoding_layer(input_col))
             else:
@@ -117,22 +132,22 @@ class FeatureProcess:
 
     def feautre_builder(self) -> None:
         for feature_name, feature_config in self.config.items():
-            if feature_config['feature_type'] == 'hashing':
+            if feature_config['type'] == 'hashing':
                 self.features_embed_layers[feature_name] = HashEmbeddingBuilder(
                     **feature_config['config']
                 )
-            elif feature_config['feature_type'] == 'vocabulary':
+            elif feature_config['type'] == 'vocabulary':
                 self.features_embed_layers[feature_name] = VocabEmbeddingBuilder(
                     **feature_config['config']
                 )
-            elif feature_config['feature_type'] == 'numerical':
+            elif feature_config['type'] == 'numerical':
                 self.features_embed_layers[feature_name] = NumericalBuilder(
                     **feature_config['config']
                 )
-            elif feature_config['feature_type'] == 'pre-trained':
+            elif feature_config['type'] == 'pre-trained':
                 raise Exception("There is no preprocessing layer for type: {}".format(feature_config['feature_type']))
                 pass
-            elif feature_config['feature_type'] == 'crossed':
+            elif feature_config['type'] == 'crossed':
                 self.features_embed_layers[feature_name] = CrossedBuilder(
                     **feature_config['config']
                 )
