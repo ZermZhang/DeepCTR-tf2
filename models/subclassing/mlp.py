@@ -14,11 +14,12 @@ import tensorflow as tf
 from utils.feature_builder import FeatureColumnBuilder
 from utils.config import Config
 from custom_utils.custom_layers import EncodedFeatureBuilder
+from utils.feature_preprocesing import StaticEncodedFeatureBuilder
 
 
 """
 MLP模型，和utils.feature_preprocessing.EncodedFeatureBuilder联动，已经调通
-model = MLP(feature_encoder)
+model = MLP(config)
 model.build_graph().summary()
 
 tf.keras.utils.plot_model(model.build_graph(), to_file='./test_model.png', show_shapes=True)
@@ -27,21 +28,30 @@ tf.keras.utils.plot_model(model.build_graph(), to_file='./test_model.png', show_
 
 
 class MLP(tf.keras.Model):
-    def __init__(self, config):
+    def __init__(self, config: dict):
         super(MLP, self).__init__()
         # init the feature config info
         self.config = config
         # definite the layers
-        self.feature_encoder_layers = EncodedFeatureBuilder()
+        # self.feature_encoder_layers = EncodedFeatureBuilder()
         self.dense_layer = tf.keras.layers.Dense(32, activation='relu')
         self.dropout_layer = tf.keras.layers.Dropout(0.5)
         self.output_layer = tf.keras.layers.Dense(1)
 
+        # init the preprocessing layer
+        self.encoders = {}
+        self.all_inputs = {}
+        for feature_name, feature_config in self.config.items():
+            encoder_layer = StaticEncodedFeatureBuilder(feature_name, feature_config)
+            self.encoders[feature_name] = encoder_layer
+            self.all_inputs[feature_name] = encoder_layer.inputs
+
     def call(self, inputs):
         encoded_features = []
         for feature_name, feature_config in self.config.items():
+            encoder_layer = self.encoders[feature_name]
             encoded_features.append(
-                self.feature_encoder_layers.build_encoded_features(feature_config)(inputs[feature_name])
+                encoder_layer.emb_layer(encoder_layer.feature_encoder(inputs[feature_name]))
             )
         x = tf.keras.layers.concatenate(encoded_features)
         x = self.dense_layer(x)
@@ -50,24 +60,10 @@ class MLP(tf.keras.Model):
         return x
 
     def build_graph(self):
-        all_inputs = {}
-        for feature_name, feature_config in self.config.items():
-            all_inputs[feature_name] = self.feature_encoder_layers.build_inputs(feature_name, feature_config)
         return tf.keras.models.Model(
-            inputs=all_inputs,
-            outputs=self.call(all_inputs)
+            inputs=self.all_inputs,
+            outputs=self.call(self.all_inputs)
         )
-
-
-# how to summary the model struct
-# test_model = MLP()
-# test_model.build_graph(input_shape=(16,)).summary()
-# how to plot the model struct
-# tf.keras.utils.plot_model(
-#     test_model.build_graph(input_shape=(16, )),
-#     to_file='./test_model.png',
-#     show_shapes=True
-# )
 
 
 class DNN(tf.keras.Model):

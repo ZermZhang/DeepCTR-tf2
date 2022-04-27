@@ -39,29 +39,32 @@ class FeatureBaseBuilder:
     def __init__(self, feature_params: dict, emb_params: dict = None,
                  use_emb_layer: bool = True):
         self.feature_params = feature_params
-        self.emb_params = emb_params
         self.use_emb_layer = use_emb_layer
+        # init the Embedding layer
+        if emb_params:
+            self.emb_params = emb_params
+        else:
+            input_dim = (
+                self.feature_params['num_bins']
+                if 'num_bins' in self.feature_params else
+                len(self.feature_params['bin_boundaries'])
+            )
+
+            self.emb_params = {
+                'input_dim': input_dim,
+                'output_dim': 8
+            }
+
+        if self.use_emb_layer:
+            self.emb_layer = layers.Embedding(**self.emb_params)
 
     def input_layer(self):
-        return preprocessing.PreprocessingLayer(**self.feature_params)
+        preprocessing_layer = preprocessing.PreprocessingLayer(**self.feature_params)
+        return preprocessing_layer
 
     def __call__(self, inputs):
         if self.use_emb_layer:
-            if self.emb_params:
-                return layers.Embedding(**self.emb_params)(self.input_layer()(inputs))
-            else:
-                input_dim = (
-                    self.feature_params['num_bins']
-                    if 'num_bins' in self.feature_params else
-                    len(self.feature_params['bin_boundaries'])
-                )
-
-                emb_params = {
-                    'input_dim': input_dim,
-                    'output_dim': 8
-                }
-                return layers.Embedding(**emb_params)(self.input_layer()(inputs))
-
+            return self.emb_layer(self.input_layer()(inputs))
         else:
             return self.input_layer()(inputs)
 
@@ -84,3 +87,74 @@ class NumericalBuilder(FeatureBaseBuilder):
 class CrossedBuilder(FeatureBaseBuilder):
     def input_layer(self):
         return tf.keras.layers.experimental.preprocessing.HashedCrossing(**self.feature_params)
+
+
+class StaticEncodedFeatureBuilder:
+    def __init__(self, feature_name: str, feature_config: dict, use_emb_layer: bool = True):
+        """
+        feature_params: dict,  preprocessing layer的相关参数
+        emb_params: dict = None, Embedding layer的相关参数
+        use_emb_layer: bool = True, 是否需要使用Embedding layer
+        """
+        self.feature_name = feature_name
+        self.feature_config = feature_config
+        self.emb_params = feature_config.get('embed_config', None)
+
+        self.use_emb_layer = use_emb_layer
+
+        # init the Embedding layer
+        if self.emb_params:
+            pass
+        else:
+            input_dim = (
+                self.feature_config['config']['num_bins']
+                if 'num_bins' in self.feature_config['config'] else
+                len(self.feature_config['config']['bin_boundaries'])
+            )
+
+            self.emb_params = {
+                'input_dim': input_dim,
+                'output_dim': 8
+            }
+
+        if self.use_emb_layer:
+            self.emb_layer = layers.Embedding(**self.emb_params)
+
+        self.feature_encoder = self.build_encoded_features(self.feature_config)
+        self.inputs = self.build_inputs(self.feature_name, self.feature_config)
+
+    @staticmethod
+    def build_encoded_features(feature_config):
+        feature_encoder_type = feature_config['type']
+        feature_encoder_params = feature_config['config']
+        if feature_encoder_type == 'hashing':
+            encoding_layer = preprocessing.Hashing(**feature_encoder_params)
+            return encoding_layer
+        elif feature_encoder_type == 'vocabulary':
+            encoding_layer = preprocessing.StringLookup(**feature_encoder_params)
+            return encoding_layer
+        elif feature_encoder_type == 'numerical':
+            encoding_layer = preprocessing.Discretization(**feature_encoder_params)
+            return encoding_layer
+        elif feature_encoder_type == 'pre-trained':
+            raise Exception("There is no preprocessing layer for type: {}".format(feature_encoder_type))
+            pass
+        elif feature_encoder_type == 'crossed':
+            encoding_layer = tf.keras.layers.experimental.preprocessing.HashedCrossing(**feature_encoder_params)
+            return encoding_layer
+        else:
+            raise Exception("There is no preprocessing layer for type: {}".format(feature_encoder_type))
+            pass
+
+    @staticmethod
+    def build_inputs(feature_name, feature_config):
+        feature_encoder_type = feature_config['type']
+        if feature_encoder_type in ('hashing', 'vocabulary'):
+            input_col = tf.keras.Input(shape=(1,), name=feature_name, dtype=tf.string)
+            return input_col
+        elif feature_encoder_type in {'numerical'}:
+            input_col = tf.keras.Input(shape=(1,), name=feature_name, dtype=tf.float32)
+            return input_col
+        else:
+            raise Exception("There is no preprocessing layer for type: {}".format(feature_encoder_type))
+            pass

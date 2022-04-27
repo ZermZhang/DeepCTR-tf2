@@ -136,6 +136,12 @@ class SequencePoolingLayer(tf.keras.layers.Layer):
 
 
 class EncodedFeatureBuilder:
+    def __init__(self, feature_name, feature_config):
+        self.feature_name = feature_name
+        self.feature_config = feature_config
+        self.feature_encoder = self.build_encoded_features(self.feature_config)
+        self.inputs = self.build_inputs(self.feature_name, self.feature_config)
+
     @staticmethod
     def build_encoded_features(feature_config):
         feature_encoder_type = feature_config['type']
