@@ -11,13 +11,15 @@
 import pickle
 
 import tensorflow as tf
-from tensorflow.python.ops import embedding_ops
-from tensorflow.python.ops import math_ops
+from tensorflow.python.ops import embedding_ops, math_ops
+
 from tensorflow.keras.layers.experimental import preprocessing
+from tensorflow.keras import layers
 
 
 class PreTrainedEmbedding(tf.keras.layers.Layer):
     def __init__(self, dim, file_path, **kwargs):
+        self.built = None
         self.mask_zero = False
         self.supports_masking = self.mask_zero
         self.dim = dim
@@ -26,7 +28,7 @@ class PreTrainedEmbedding(tf.keras.layers.Layer):
         self.embeddings = None
         super(PreTrainedEmbedding, self).__init__(**kwargs)
 
-    def build(self, input_shape):
+    def build(self):
         self.kernel = self.add_weight(name='weight', shape=(2, self.dim), initializer='glorot_uniform')
         with open(self.file_path, 'rb') as f:
             self.embeddings = pickle.load(f)
@@ -34,11 +36,11 @@ class PreTrainedEmbedding(tf.keras.layers.Layer):
         self.embeddings = tf.concat((self.kernel, self.embeddings), axis=0)
         self.built = True
 
-    def call(self, inputs, **kwargs):
+    def call(self, inputs):
         out = embedding_ops.embedding_lookup(self.embeddings, inputs)
         return out
 
-    def compute_mask(self, inputs, mask=None):
+    def compute_mask(self, inputs):
         if not self.mask_zero:
             return None
         return math_ops.not_equal(inputs, 0)
@@ -67,7 +69,7 @@ class LinearLayer(tf.keras.layers.Layer):
         self.w = self.add_variable(name='w', shape=[input_shape[-1], self.units], initializer=tf.zeros_initializer())
         self.b = self.add_variable(name='b', shape=[self.units], initializer=tf.zeros_initializer())
 
-    def call(self, inputs, **kwargs):
+    def call(self, inputs):
         y_pred = tf.matmul(inputs, self.w) + self.b
         return y_pred
 
@@ -78,6 +80,7 @@ class SequencePoolingLayer(tf.keras.layers.Layer):
     """
     def __init__(self, mode='mean', support_masking=False, **kwargs):
         super(SequencePoolingLayer, self).__init__(**kwargs)
+        self.seq_len_max = None
         if mode not in ['mean', 'max', 'min']:
             raise Exception("the mode: {} is not supported!".format(mode))
 
@@ -90,7 +93,7 @@ class SequencePoolingLayer(tf.keras.layers.Layer):
             self.seq_len_max = int(input_shape[0][1])
         super(SequencePoolingLayer, self).build(input_shape)
 
-    def call(self, seq_value_len_list, mask=None, **kwargs):
+    def call(self, seq_value_len_list, mask=None):
         if self.supports_masking:
             if mask is None:
                 raise ValueError("When support_masking=True, input must support masking")
@@ -128,7 +131,6 @@ class SequencePoolingLayer(tf.keras.layers.Layer):
         config = {'mode': self.mode, 'support_masking': self.supports_masking}
         base_config = super(SequencePoolingLayer, self).get_config()
         return base_config.update(config)
-        # return dict(list(base_config.items()) + list(config.items()))
 
 
 class StaticEncodedFeatureBuilder:
