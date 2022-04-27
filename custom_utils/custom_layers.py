@@ -13,11 +13,7 @@ import pickle
 import tensorflow as tf
 from tensorflow.python.ops import embedding_ops
 from tensorflow.python.ops import math_ops
-
-from utils.feature_preprocesing import (
-    HashEmbeddingBuilder, NumericalBuilder,
-    VocabEmbeddingBuilder, CrossedBuilder
-)
+from tensorflow.keras.layers.experimental import preprocessing
 
 
 class PreTrainedEmbedding(tf.keras.layers.Layer):
@@ -135,44 +131,58 @@ class SequencePoolingLayer(tf.keras.layers.Layer):
         # return dict(list(base_config.items()) + list(config.items()))
 
 
-class EncodedFeatureBuilder:
-    def __init__(self, feature_name, feature_config):
+class StaticEncodedFeatureBuilder:
+    def __init__(self, feature_name: str, config: dict):
+        """
+        feature_params: dict,  preprocessing layer的相关参数
+        emb_params: dict = None, Embedding layer的相关参数
+        use_emb_layer: bool = True, 是否需要使用Embedding layer
+        """
         self.feature_name = feature_name
-        self.feature_config = feature_config
-        self.feature_encoder = self.build_encoded_features(self.feature_config)
-        self.inputs = self.build_inputs(self.feature_name, self.feature_config)
+        self.config = config
+        self.use_emb_layer = config.get('use_emb_layer', True)
+        self.emb_params = config.get('emb_config', None)
+        # init the Embedding layer
+        if self.emb_params:
+            pass
+        else:
+            input_dim = (
+                self.config['config']['num_bins']
+                if 'num_bins' in self.config['config'] else
+                len(self.config['config']['bin_boundaries'])
+            )
+
+            self.emb_params = {
+                'input_dim': input_dim,
+                'output_dim': 8
+            }
+
+        if self.use_emb_layer:
+            self.emb_layer = layers.Embedding(**self.emb_params)
+        else:
+            self.emb_layer = None
+
+        self.feature_encoder = self.build_encoded_features(self.config)
+        self.inputs = self.build_inputs(self.feature_name, self.config)
 
     @staticmethod
     def build_encoded_features(feature_config):
         feature_encoder_type = feature_config['type']
         feature_encoder_params = feature_config['config']
-        feature_embedding_params = feature_config.get('embed_config', None)
         if feature_encoder_type == 'hashing':
-            encoding_layer = HashEmbeddingBuilder(
-                feature_params=feature_encoder_params,
-                emb_params=feature_embedding_params
-            )
+            encoding_layer = preprocessing.Hashing(**feature_encoder_params)
             return encoding_layer
         elif feature_encoder_type == 'vocabulary':
-            encoding_layer = VocabEmbeddingBuilder(
-                feature_params=feature_encoder_params,
-                emb_params=feature_embedding_params
-            )
+            encoding_layer = preprocessing.StringLookup(**feature_encoder_params)
             return encoding_layer
         elif feature_encoder_type == 'numerical':
-            encoding_layer = NumericalBuilder(
-                feature_params=feature_encoder_params,
-                emb_params=feature_embedding_params
-            )
+            encoding_layer = preprocessing.Discretization(**feature_encoder_params)
             return encoding_layer
         elif feature_encoder_type == 'pre-trained':
             raise Exception("There is no preprocessing layer for type: {}".format(feature_encoder_type))
             pass
         elif feature_encoder_type == 'crossed':
-            encoding_layer = CrossedBuilder(
-                feature_params=feature_encoder_params,
-                emb_params=feature_embedding_params
-            )
+            encoding_layer = tf.keras.layers.experimental.preprocessing.HashedCrossing(**feature_encoder_params)
             return encoding_layer
         else:
             raise Exception("There is no preprocessing layer for type: {}".format(feature_encoder_type))
@@ -190,4 +200,3 @@ class EncodedFeatureBuilder:
         else:
             raise Exception("There is no preprocessing layer for type: {}".format(feature_encoder_type))
             pass
-

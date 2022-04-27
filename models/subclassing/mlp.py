@@ -13,7 +13,8 @@ import tensorflow as tf
 
 from utils.feature_builder import FeatureColumnBuilder
 from utils.config import Config
-from utils.feature_preprocesing import StaticEncodedFeatureBuilder
+
+from custom_utils.custom_layers import StaticEncodedFeatureBuilder
 
 
 """
