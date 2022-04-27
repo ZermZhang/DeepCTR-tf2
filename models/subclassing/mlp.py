@@ -13,7 +13,6 @@ import tensorflow as tf
 
 from utils.feature_builder import FeatureColumnBuilder
 from utils.config import Config
-from custom_utils.custom_layers import EncodedFeatureBuilder
 from utils.feature_preprocesing import StaticEncodedFeatureBuilder
 
 
@@ -24,35 +23,42 @@ model.build_graph().summary()
 
 tf.keras.utils.plot_model(model.build_graph(), to_file='./test_model.png', show_shapes=True)
 
+导出模型：
+model.save(model_dir, save_format='tf')
 """
 
 
 class MLP(tf.keras.Model):
-    def __init__(self, config: dict):
-        super(MLP, self).__init__()
+    def __init__(self, config: dict, *args, **kwargs):
+        super(MLP, self).__init__(*args, **kwargs)
         # init the feature config info
         self.config = config
         # definite the layers
-        # self.feature_encoder_layers = EncodedFeatureBuilder()
         self.dense_layer = tf.keras.layers.Dense(32, activation='relu')
         self.dropout_layer = tf.keras.layers.Dropout(0.5)
         self.output_layer = tf.keras.layers.Dense(1)
 
         # init the preprocessing layer
         self.encoders = {}
+        self.emb_layers = {}
         self.all_inputs = {}
         for feature_name, feature_config in self.config.items():
             encoder_layer = StaticEncodedFeatureBuilder(feature_name, feature_config)
-            self.encoders[feature_name] = encoder_layer
+            self.encoders[feature_name] = encoder_layer.feature_encoder
+            self.emb_layers[feature_name] = encoder_layer.emb_layer
             self.all_inputs[feature_name] = encoder_layer.inputs
 
     def call(self, inputs):
         encoded_features = []
         for feature_name, feature_config in self.config.items():
-            encoder_layer = self.encoders[feature_name]
-            encoded_features.append(
-                encoder_layer.emb_layer(encoder_layer.feature_encoder(inputs[feature_name]))
-            )
+            if not self.emb_layers[feature_name]:
+                encoded_features.append(
+                    self.encoders[feature_name](inputs[feature_name])
+                )
+            else:
+                encoded_features.append(
+                    self.emb_layers[feature_name](self.encoders[feature_name](inputs[feature_name]))
+                )
         x = tf.keras.layers.concatenate(encoded_features)
         x = self.dense_layer(x)
         x = self.dropout_layer(x)

@@ -90,26 +90,24 @@ class CrossedBuilder(FeatureBaseBuilder):
 
 
 class StaticEncodedFeatureBuilder:
-    def __init__(self, feature_name: str, feature_config: dict, use_emb_layer: bool = True):
+    def __init__(self, feature_name: str, config: dict, use_emb_layer: bool = True):
         """
         feature_params: dict,  preprocessing layer的相关参数
         emb_params: dict = None, Embedding layer的相关参数
         use_emb_layer: bool = True, 是否需要使用Embedding layer
         """
         self.feature_name = feature_name
-        self.feature_config = feature_config
-        self.emb_params = feature_config.get('embed_config', None)
-
+        self.config = config
         self.use_emb_layer = use_emb_layer
-
+        self.emb_params = config.get('emb_config', None)
         # init the Embedding layer
         if self.emb_params:
             pass
         else:
             input_dim = (
-                self.feature_config['config']['num_bins']
-                if 'num_bins' in self.feature_config['config'] else
-                len(self.feature_config['config']['bin_boundaries'])
+                self.config['config']['num_bins']
+                if 'num_bins' in self.config['config'] else
+                len(self.config['config']['bin_boundaries'])
             )
 
             self.emb_params = {
@@ -119,9 +117,11 @@ class StaticEncodedFeatureBuilder:
 
         if self.use_emb_layer:
             self.emb_layer = layers.Embedding(**self.emb_params)
+        else:
+            self.emb_layer = None
 
-        self.feature_encoder = self.build_encoded_features(self.feature_config)
-        self.inputs = self.build_inputs(self.feature_name, self.feature_config)
+        self.feature_encoder = self.build_encoded_features(self.config)
+        self.inputs = self.build_inputs(self.feature_name, self.config)
 
     @staticmethod
     def build_encoded_features(feature_config):
