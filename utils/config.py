@@ -22,15 +22,15 @@ class Config(object):
             self.config_path = abs_path
             self.__conf_path_check(self.config_path)
             self.config = self.load(os.path.join(self.config_path, 'conf.yaml'))
-            self.feature_config = self.load(os.path.join(self.config_path, 'feature.yaml'))
+            self.feature_config = self.load(os.path.join(self.config_path, 'feature-old.yaml'))
 
     @staticmethod
     def __conf_path_check(config_path):
         config_files = os.listdir(config_path)
         if 'conf.yaml' not in config_files:
             raise Exception("{} not existed!".format('conf.yaml'))
-        if 'feature.yaml' not in config_files:
-            raise Exception("{} not existed!".format('feature.yaml'))
+        if 'feature-old.yaml' not in config_files:
+            raise Exception("{} not existed!".format('feature-old.yaml'))
 
     @staticmethod
     def load(config_path):

@@ -129,6 +129,37 @@ class CustomDataLoader(object):
         return dataset
 
 
+def get_dta():
+    # get the origin datas
+    dataset_url = 'http://storage.googleapis.com/download.tensorflow.org/data/petfinder-mini.zip'
+    csv_file = 'datasets/petfinder-mini/petfinder-mini.csv'
+
+    tf.keras.utils.get_file('petfinder_mini.zip', dataset_url,
+                            extract=True, cache_dir='.')
+    dataframe = pd.read_csv(csv_file)
+    dataframe['target'] = np.where(dataframe['AdoptionSpeed'] == 4, 0., 1.)
+
+    # Drop un-used columns.
+    dataframe = dataframe.drop(columns=['AdoptionSpeed', 'Description'])
+
+    # generate the dataset
+    def df_to_dataset(dataframe_, shuffle=True, batch_size_=32):
+        dataframe_ = dataframe_.copy()
+        labels = dataframe_.pop('target')
+        ds = tf.data.Dataset.from_tensor_slices((dict(dataframe_), labels))
+
+        if shuffle:
+            ds = ds.shuffle(buffer_size=len(dataframe_))
+
+        ds = ds.batch(batch_size)
+        ds = ds.prefetch(batch_size)
+
+        return ds
+
+    train_ds = df_to_dataset(dataframe, shuffle=True, batch_size_=4)
+    return train_ds
+
+
 if __name__ == "__main__":
     CONFIG = Config('./conf/')
     train_path = CONFIG.read_data_path('train')

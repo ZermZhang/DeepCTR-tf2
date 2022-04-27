@@ -90,7 +90,7 @@ class CrossedBuilder(FeatureBaseBuilder):
 
 
 class StaticEncodedFeatureBuilder:
-    def __init__(self, feature_name: str, config: dict, use_emb_layer: bool = True):
+    def __init__(self, feature_name: str, config: dict):
         """
         feature_params: dict,  preprocessing layer的相关参数
         emb_params: dict = None, Embedding layer的相关参数
@@ -98,7 +98,7 @@ class StaticEncodedFeatureBuilder:
         """
         self.feature_name = feature_name
         self.config = config
-        self.use_emb_layer = use_emb_layer
+        self.use_emb_layer = config.get('use_emb_layer', True)
         self.emb_params = config.get('emb_config', None)
         # init the Embedding layer
         if self.emb_params:

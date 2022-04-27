@@ -1,0 +1,112 @@
+Type:
+    type: 'hashing'
+    config:
+      num_bins: 20
+    emb_config:
+      input_dim: 16
+      output_dim: 8
+    use_emb_layer: True
+Age:
+    type: 'hashing'
+    config:
+      num_bins: 20
+    emb_config:
+      input_dim: 16
+      output_dim: 8
+    use_emb_layer: True
+Breed1:
+    type: 'hashing'
+    config:
+      num_bins: 20
+    emb_config:
+      input_dim: 16
+      output_dim: 8
+    use_emb_layer: True
+Gender:
+    type: 'hashing'
+    config:
+      num_bins: 20
+    emb_config:
+      input_dim: 16
+      output_dim: 8
+    use_emb_layer: True
+Color1:
+    type: 'hashing'
+    config:
+      num_bins: 20
+    emb_config:
+      input_dim: 16
+      output_dim: 8
+    use_emb_layer: True
+Color2:
+    type: 'hashing'
+    config:
+      num_bins: 20
+    emb_config:
+      input_dim: 16
+      output_dim: 8
+    use_emb_layer: True
+MaturitySize:
+    type: 'hashing'
+    config:
+      num_bins: 20
+    emb_config:
+      input_dim: 16
+      output_dim: 8
+    use_emb_layer: True
+FurLength:
+    type: 'hashing'
+    config:
+      num_bins: 20
+    emb_config:
+      input_dim: 16
+      output_dim: 8
+    use_emb_layer: True
+Vaccinated:
+    type: 'hashing'
+    config:
+      num_bins: 20
+    emb_config:
+      input_dim: 16
+      output_dim: 8
+    use_emb_layer: True
+Sterilized:
+    type: 'hashing'
+    config:
+      num_bins: 20
+    emb_config:
+      input_dim: 16
+      output_dim: 8
+    use_emb_layer: True
+Health:
+    type: 'hashing'
+    config:
+      num_bins: 20
+    emb_config:
+      input_dim: 16
+      output_dim: 8
+    use_emb_layer: True
+Fee:
+    type: 'hashing'
+    config:
+      num_bins: 20
+    emb_config:
+      input_dim: 16
+      output_dim: 8
+    use_emb_layer: True
+PhotoAmt:
+    type: 'hashing'
+    config:
+      num_bins: 20
+    emb_config:
+      input_dim: 16
+      output_dim: 8
+    use_emb_layer: True
+target:
+    type: 'hashing'
+    config:
+      num_bins: 20
+    emb_config:
+      input_dim: 16
+      output_dim: 8
+    use_emb_layer: True
