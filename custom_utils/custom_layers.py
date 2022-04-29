@@ -18,6 +18,59 @@ from tensorflow.keras.layers.experimental import preprocessing
 from tensorflow.keras import layers
 
 
+class InputIdxLayer(tf.keras.layers.experimental.preprocessing.PreprocessingLayer):
+    """
+    获取输入特征对应的特征list中的idx信息，方便后续从embeddinglist中获取需要的embdding
+    1. 直接映射
+        item => idx for item in inputs_list
+    2. 间接映射
+        item => attr => idx for item's attr in target_list
+    """
+    def __init__(self, inputs_list: List, mapping_list: List = None,
+                 target_list: List = None, **kwargs):
+        super(InputIdxLayer, self).__init__(**kwargs)
+        self.inputs_list = inputs_list
+        self.mapping_list = mapping_list
+        self.target_list = target_list
+        print(self.inputs_list, self.mapping_list, self.target_list)
+        if self.mapping_list is None:
+            self.target_table = self.get_table(self.inputs_list,
+                                               [i for i in range(len(self.inputs_list))])
+        else:
+            self.mapping_table = self.get_table(self.inputs_list, self.mapping_list,
+                                                default_value='')
+            self.target_table = self.get_table(self.target_list,
+                                               [i for i in range(len(self.target_list))])
+
+    @staticmethod
+    def get_table(keys: List, vals: List, default_value: Any = -1):
+        init = tf.lookup.KeyValueTensorInitializer(keys, vals)
+        table = tf.lookup.StaticHashTable(init, default_value=default_value)
+        return table
+
+    def call(self, inputs):
+        if self.mapping_table is None:
+            idx_ = self.target_table.lookup(inputs)
+            return idx_
+        else:
+            target_ = self.mapping_table.lookup(inputs)
+            idx_ = self.target_table.lookup(target_)
+            return idx_
+
+
+class LoadEmbeddingLayer(tf.keras.layers.Layer):
+    """
+    get the pre-trained embedding in embdding List
+    inpust: the idx_ output from InputIdxLayer
+    """
+    def __init__(self, embedding, **kwargs):
+        super(LoadEmbeddingLayer).__init__(**kwargs)
+        self.embedding = tf.constant(embedding)
+
+    def call(self, inputs):
+        return tf.nn.embedding_lookup(self.embedding, inputs)
+
+
 class PreTrainEmbLoadLayer(tf.keras.layers.Layer):
     """
     方便导入预训练的embedding的layer
