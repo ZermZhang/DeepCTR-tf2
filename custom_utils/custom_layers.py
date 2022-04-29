@@ -9,12 +9,63 @@
 @Desciption     : the utils functions for layers
 """
 import pickle
+from typing import List, Any
 
 import tensorflow as tf
 from tensorflow.python.ops import embedding_ops, math_ops
 
 from tensorflow.keras.layers.experimental import preprocessing
 from tensorflow.keras import layers
+
+
+class PreTrainEmbLoadLayer(tf.keras.layers.Layer):
+    """
+    方便导入预训练的embedding的layer
+    可以处理两种embedding导入的方式：
+    1. 直接映射
+        item => embedding
+    2. 间接映射
+        item => attr => embedding
+    """
+    def __init__(self,
+                 embedding: List,
+                 inputs_list: List,
+                 mapping_list: List = None,
+                 target_list: List = None,
+                 **kwargs):
+        super(PreTrainEmbLoadLayer, self).__init__(**kwargs)
+        self.embedding = tf.constant(embedding)
+        self.inputs_list = inputs_list
+        self.mapping_list = mapping_list
+        self.target_list = target_list
+        self.mapping_table = None
+        self.target_table = None
+
+        if self.mapping_list is None:
+            self.target_table = self.get_table(self.inputs_list,
+                                               [i for i in range(len(self.inputs_list))])
+        else:
+            self.mapping_table = self.get_table(self.inputs_list, self.mapping_list,
+                                                default_value='')
+            self.target_table = self.get_table(self.target_list,
+                                               [i for i in range(len(self.target_list))])
+
+    @staticmethod
+    def get_table(keys: List, vals: List, default_value: Any = -1):
+        init = tf.lookup.KeyValueTensorInitializer(keys, vals)
+        table = tf.lookup.StaticHashTable(init, default_value=default_value)
+        return table
+
+    def call(self, inputs):
+        if self.mapping_table is None:
+            idx_ = self.target_table.lookup(inputs)
+            return tf.nn.embedding_lookup(self.embedding, idx_)
+        else:
+            target_ = self.mapping_table.lookup(inputs)
+            print(target_)
+            idx_ = self.target_table.lookup(target_)
+            print(idx_)
+            return tf.nn.embedding_lookup(self.embedding, idx_)
 
 
 class PreTrainedEmbedding(tf.keras.layers.Layer):
