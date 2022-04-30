@@ -156,7 +156,7 @@ def get_dta():
 
         return ds
 
-    train_ds = df_to_dataset(dataframe, shuffle=True, batch_size=4)
+    train_ds = df_to_dataset(dataframe, shuffle=True, batch_size_=4)
     return train_ds
 
 
