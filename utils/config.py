@@ -22,7 +22,7 @@ class Config(object):
             self.config_path = abs_path
             self.__conf_path_check(self.config_path)
             self.config = self.load(os.path.join(self.config_path, 'conf.yaml'))
-            self.feature_config = self.load(os.path.join(self.config_path, 'feature-old.yaml'))
+            self.feature_config = self.load(os.path.join(self.config_path, 'feature.yaml'))
 
     @staticmethod
     def __conf_path_check(config_path):
@@ -35,7 +35,7 @@ class Config(object):
     @staticmethod
     def load(config_path):
         with open(config_path) as f:
-            config = yaml.load(f)
+            config = yaml.safe_load(f)
         return config
 
     # the dataset config info from configure file
@@ -59,7 +59,6 @@ class Config(object):
     # the detail info for data config
     def read_data_path(self, mode='train'):
         dataset_config = self.dataset_config
-        data_path = ''
         if mode == 'train':
             data_path = dataset_config.get('train_path', '')
         elif mode == 'test':
@@ -131,7 +130,9 @@ class Config(object):
 
 if __name__ == "__main__":
 
-    CONFIG = Config('./conf/conf.yaml')
-    print(CONFIG.config)
-    CONFIG_TRAIN = CONFIG.model_config
+    config_ = Config('./conf/')
+    print(config_.config)
+    CONFIG_TRAIN = config_.model_config
     print(CONFIG_TRAIN)
+    features_config = config_.feature_config
+    print(features_config)
