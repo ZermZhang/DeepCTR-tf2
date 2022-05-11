@@ -10,6 +10,7 @@
 """
 import tensorflow as tf
 from custom_utils.custom_layers import StaticEncodedFeatureBuilder
+from custom_utils import custom_losses
 
 
 class ModelBaseBuilder(tf.keras.Model):
@@ -23,6 +24,14 @@ class ModelBaseBuilder(tf.keras.Model):
         self.all_inputs = {}
         self.init_input_layer()
 
+        # definite the optimizer
+        self.optimizer_conf = self.config.get('optimizer', {})
+        self.optimizer = tf.keras.optimizers.get(self.optimizer_conf.get('name'))(self.optimizer_conf.get('params'))
+        # definite the loss function
+        self.loss_func = custom_losses.get('reduce_sum_sigmoid_crossentropy_loss')
+        # definite the metrics
+        self.metrics = tf.keras.metrics.get(self.config.get('metrics', 'AUC'))
+
     def init_input_layer(self):
         """
         生成模型需要依赖的输入层信息
@@ -35,6 +44,20 @@ class ModelBaseBuilder(tf.keras.Model):
             self.encoder_layers[feature_name] = feature_builder.feature_encoder
             self.emb_layers[feature_name] = feature_builder.emb_layer
             self.all_inputs[feature_name] = feature_builder.inputs
+
+    @tf.function
+    def train_step(self, batch_features: dict, batch_labels: dict):
+        with tf.GradientTape() as tape:
+            batch_preds = self.call(batch_features)
+            batch_loss = self.loss_func(y_true=batch_labels, y_pred=batch_preds)
+
+        grads = tape.gradient(batch_loss, self.train_variables)
+        self.optimizer.apply_gradients(grads_and_vars=zip(grads, self.train_variables))
+
+    @tf.function
+    def eval_step(self, batch_features: dict, batch_labels: dict):
+        batch_preds = self.call(batch_features)
+        self.metrics.update_state(y_true=batch_labels, y_pred=batch_preds)
 
     def build_graph(self):
         return tf.keras.models.Model(
