@@ -14,7 +14,7 @@ from tensorflow.keras.losses import deserialize
 
 
 @keras_export('keras.losses.get')
-def get(self, identifier):
+def get(identifier):
     if identifier is None:
         return None
 
