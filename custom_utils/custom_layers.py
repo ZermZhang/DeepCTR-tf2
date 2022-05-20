@@ -237,6 +237,36 @@ class SequencePoolingLayer(tf.keras.layers.Layer):
         return base_config.update(config)
 
 
+class SeBlockLayer(tf.keras.layers.Layer):
+    """
+    the SeBlock layer for features
+    """
+    def __init__(self, out_dim, ratio=4.0, *args, **kwargs):
+        super(SeBlockLayer, self).__init__(*args, **kwargs)
+
+        self.out_dim = out_dim
+        self.mid_dim = tf.math.ceil(out_dim / ratio)
+        self.ratio = ratio
+
+        self.avg_weights = []
+
+    def build(self, input_shape):
+        super(SeBlockLayer, self).build(input_shape)
+
+    def call(self, feature_embs):
+        for feature_emb in feature_embs:
+            self.avg_weights.append(tf.reduce_mean(feature_emb))
+        se_inputs = tf.convert_to_tensor([self.avg_weights])
+        outputs = tf.keras.layers.Dense(self.mid_dim)(se_inputs)
+        outputs = tf.nn.relu(outputs)
+        outputs = tf.keras.layers.Dense(self.out_dim)(outputs)
+        outputs = tf.nn.sigmoid(outputs)
+
+        se_outputs = feature_embs * outputs
+
+        return se_outputs
+
+
 class StaticEncodedFeatureBuilder:
     def __init__(self, feature_name: str, config: dict):
         """
