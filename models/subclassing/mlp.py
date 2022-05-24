@@ -29,7 +29,7 @@ model.save(model_dir, save_format='tf')
 
 
 class MLPBuilder(ModelBaseBuilder):
-    def __init__(self, config: dict, *args, **kwargs):
+    def __init__(self, config, *args, **kwargs):
         super(MLPBuilder, self).__init__(config, *args, **kwargs)
         self.dense_layer = tf.keras.layers.Dense(32, activation='relu')
         self.dropout_layer = tf.keras.layers.Dropout(0.5)

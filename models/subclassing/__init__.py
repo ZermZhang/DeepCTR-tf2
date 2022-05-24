@@ -14,7 +14,7 @@ from custom_utils import custom_losses
 
 
 class ModelBaseBuilder(tf.keras.Model):
-    def __init__(self, config: dict, *args, **kwargs):
+    def __init__(self, config, *args, **kwargs):
         super(ModelBaseBuilder, self).__init__(*args, **kwargs)
         # init the feature config info
         self.config = config
