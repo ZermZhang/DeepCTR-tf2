@@ -14,6 +14,49 @@ import tensorflow as tf
 from datas import load_data
 from utils import config, feature_columns
 
+from . import ModelBaseBuilder
+
+
+class Linear(ModelBaseBuilder):
+    """
+    the Linear Model implement with ModelBaseBuilder
+    """
+    def __init__(self, config_, use_emb_layer,
+                 *args, **kwargs):
+        super(Linear, self).__init__(config_, use_emb_layer, *args, **kwargs)
+        self.config = config_
+
+        self.classes = 1
+        # the linear model, without activation
+        self.activation = None
+
+        self.flatten = tf.keras.layers.Flatten()
+        self.dense = tf.keras.layers.Dense(
+            units=self.classes,
+            activation=self.activation,
+            kernel_initializer=tf.zeros_initializer(),
+            bias_initializer=tf.zeros_initializer()
+        )
+
+    def call(self, inputs):
+        encoded_features = []
+        for feature_name, feature_config in self.config.items():
+            if not self.emb_layers[feature_name]:
+                encoded_features.append(
+                    tf.expand_dims(self.encoder_layers[feature_name](inputs[feature_name]), axis=1)
+                )
+            else:
+                encoded_features.append(
+                    self.emb_layers[feature_name](self.encoder_layers[feature_name](inputs[feature_name]))
+                )
+        x = tf.keras.layers.concatenate(encoded_features, axis=-1)
+        output = self.dense(x)
+        return output
+
+
+# ============================================================================================================
+# something old
+# ============================================================================================================
 
 class LinearBase(tf.keras.Model):
     def __init__(self):

@@ -40,7 +40,7 @@ class MLPBuilder(ModelBaseBuilder):
         for feature_name, feature_config in self.config.items():
             if not self.emb_layers[feature_name]:
                 encoded_features.append(
-                    self.encoder_layers[feature_name](inputs[feature_name])
+                    tf.expand_dims(self.encoder_layers[feature_name](inputs[feature_name]), axis=1)
                 )
             else:
                 encoded_features.append(
