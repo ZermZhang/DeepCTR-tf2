@@ -21,10 +21,9 @@ class Linear(ModelBaseBuilder):
     """
     the Linear Model implement with ModelBaseBuilder
     """
-    def __init__(self, config_, use_emb_layer,
-                 *args, **kwargs):
-        super(Linear, self).__init__(config_, use_emb_layer, *args, **kwargs)
-        self.config = config_
+    def __init__(self, config, *args, **kwargs):
+        super(Linear, self).__init__(config, *args, **kwargs)
+        self.config = config
 
         self.classes = 1
         # the linear model, without activation
