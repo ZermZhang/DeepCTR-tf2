@@ -13,6 +13,7 @@ from typing import List, Any
 
 import tensorflow as tf
 from tensorflow.python.ops import embedding_ops, math_ops
+from tensorflow import Tensor
 
 from tensorflow.keras.layers.experimental import preprocessing
 from tensorflow.keras import layers
@@ -253,18 +254,41 @@ class SeBlockLayer(tf.keras.layers.Layer):
     def build(self, input_shape):
         super(SeBlockLayer, self).build(input_shape)
 
-    def call(self, feature_embs):
+    def call(self, feature_embs: List[Tensor]):
+        """
+        根据feautre_embs进行SEBlock处理
+        注意：feature_embs是list类型，元素可能是不同维度的tensor
+        返回结果是经过了加权之后的embedding信息
+        """
+
         for feature_emb in feature_embs:
-            self.avg_weights.append(tf.reduce_mean(feature_emb))
-        se_inputs = tf.convert_to_tensor([self.avg_weights])
+            self.avg_weights.append(tf.reduce_mean(feature_emb, axis=1, keepdims=True))
+
+        se_inputs = tf.concat(self.avg_weights, axis=-1)
         outputs = tf.keras.layers.Dense(self.mid_dim)(se_inputs)
         outputs = tf.nn.relu(outputs)
         outputs = tf.keras.layers.Dense(self.out_dim)(outputs)
         outputs = tf.nn.sigmoid(outputs)
 
-        se_outputs = feature_embs * outputs
+        se_outputs = self.cal_weighted(feature_embs, outputs)
 
         return se_outputs
+
+    @staticmethod
+    def cal_weighted(inputs: List[Tensor], weights: Tensor):
+        """
+        对输入的embdding特征进行加权
+        因为inputs是一个list，里面每个tensor的维度可能是不一样的
+        """
+        outputs = []
+
+        for i in range(len(inputs)):
+            weight = weights[:, i]
+            weight = tf.expand_dims(weight, axis=1)
+            weighted_tensor = inputs[i] * weight
+            outputs.append(weighted_tensor)
+
+        return outputs
 
 
 class StaticEncodedFeatureBuilder:
