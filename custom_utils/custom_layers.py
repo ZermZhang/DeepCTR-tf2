@@ -246,10 +246,13 @@ class SeBlockLayer(tf.keras.layers.Layer):
         super(SeBlockLayer, self).__init__(*args, **kwargs)
 
         self.out_dim = out_dim
-        self.mid_dim = tf.math.ceil(out_dim / ratio)
+        self.mid_dim = out_dim // ratio
         self.ratio = ratio
 
         self.avg_weights = []
+
+        self.dense_layer1 = tf.keras.layers.Dense(self.mid_dim)
+        self.dense_layer2 = tf.keras.layers.Dense(self.out_dim)
 
     def build(self, input_shape):
         super(SeBlockLayer, self).build(input_shape)
@@ -265,9 +268,9 @@ class SeBlockLayer(tf.keras.layers.Layer):
             self.avg_weights.append(tf.reduce_mean(feature_emb, axis=1, keepdims=True))
 
         se_inputs = tf.concat(self.avg_weights, axis=-1)
-        outputs = tf.keras.layers.Dense(self.mid_dim)(se_inputs)
+        outputs = self.dense_layer1(se_inputs)
         outputs = tf.nn.relu(outputs)
-        outputs = tf.keras.layers.Dense(self.out_dim)(outputs)
+        outputs = self.dense_layer2(outputs)
         outputs = tf.nn.sigmoid(outputs)
 
         se_outputs = self.cal_weighted(feature_embs, outputs)
