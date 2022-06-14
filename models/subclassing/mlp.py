@@ -13,7 +13,7 @@ import tensorflow as tf
 
 from utils.feature_builder import FeatureColumnBuilder
 from utils.config import Config
-from . import ModelBaseBuilder
+from base import ModelBaseBuilder
 
 
 """
