@@ -12,7 +12,7 @@ from typing import List
 
 import tensorflow as tf
 
-from utils.feature_builder import FeatureColumnBuilder
+from src.utils.feature_builder import FeatureColumnBuilder
 
 
 def mlp_model(feature_builder: FeatureColumnBuilder,

@@ -1,12 +1,12 @@
 import tensorflow as tf
 
-from models.subclassing import cnn, drl, lr, mlp
-from datas import load_data
-from utils import config, runner
-from custom_utils import custom_losses
+from src.models.subclassing import cnn, drl, lr, mlp
+from src.datas import load_data
+from src.utils import config, runner
+from src.custom_utils import custom_losses
 
 # 获取模型的相关配置
-CONFIG = config.Config("./conf/")
+CONFIG = config.Config("examples/conf/")
 CONFIG_TRAIN = CONFIG.model_config
 
 num_epoches = CONFIG_TRAIN.get('num_epoches', 3)

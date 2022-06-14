@@ -12,10 +12,10 @@
 
 import tensorflow as tf
 
-from datas import load_data
-from utils import runner
-from custom_utils import custom_layers
-from utils.model_utils import classes_activation_check
+from src.datas import load_data
+from src.utils import runner
+from src.custom_utils import custom_layers
+from src.utils.model_utils import classes_activation_check
 
 
 class Wide(tf.keras.Model):

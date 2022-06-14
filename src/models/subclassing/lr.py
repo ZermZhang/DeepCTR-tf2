@@ -11,7 +11,7 @@
 
 import tensorflow as tf
 
-from utils.model_utils import classes_activation_check
+from src.utils.model_utils import classes_activation_check
 
 from . import ModelBaseBuilder
 

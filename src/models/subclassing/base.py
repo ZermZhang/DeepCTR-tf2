@@ -9,8 +9,8 @@
 @Desciption     :
 """
 import tensorflow as tf
-from custom_utils.custom_layers import StaticEncodedFeatureBuilder
-from custom_utils import custom_losses
+from src.custom_utils.custom_layers import StaticEncodedFeatureBuilder
+from src.custom_utils import custom_losses
 
 
 class ModelBaseBuilder(tf.keras.Model):

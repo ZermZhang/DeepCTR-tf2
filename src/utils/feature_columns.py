@@ -126,7 +126,8 @@ def input_from_feature_columns(features, feature_columns):
 
 if __name__ == "__main__":
     conf_dir = './conf'
-    from utils import config
+    from src.utils import config
+
     CONFIG = config.Config(conf_dir)
     wide_columns, deep_columns = get_feature_columns(CONFIG)
     print(wide_columns)

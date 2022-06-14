@@ -11,9 +11,9 @@
 
 import tensorflow as tf
 
-from models.subclassing import linear
-from utils import feature_columns, config
-from datas import load_data
+from src.models.subclassing import linear
+from src.utils import config, feature_columns
+from src.datas import load_data
 
 
 class FM(linear.Linear):
@@ -68,6 +68,6 @@ def fm_runner(CONFIG, deep_columns):
 
 
 if __name__ == "__main__":
-    CONFIG = config.Config('../../conf/')
+    CONFIG = config.Config('../../../examples/conf/')
     wide_columns, deep_columns = feature_columns.get_feature_columns(CONFIG)
     fm_runner(CONFIG, deep_columns)

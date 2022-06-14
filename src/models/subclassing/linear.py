@@ -11,8 +11,8 @@
 
 import tensorflow as tf
 
-from datas import load_data
-from utils import config, feature_columns
+from src.datas import load_data
+from src.utils import config, feature_columns
 
 from . import ModelBaseBuilder
 
@@ -188,7 +188,7 @@ def linear_base_runner():
 
 
 if __name__ == "__main__":
-    CONFIG = config.Config('../../conf/')
+    CONFIG = config.Config('../../../examples/conf/')
     wide_columns, deep_columns = feature_columns.get_feature_columns(CONFIG)
     print(wide_columns, deep_columns)
     if not wide_columns and not deep_columns:

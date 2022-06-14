@@ -11,7 +11,7 @@
 import numpy as np
 import tensorflow as tf
 
-from datas import load_data
+from src.datas import load_data
 
 
 class RNN(tf.keras.Model):

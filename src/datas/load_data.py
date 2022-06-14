@@ -13,7 +13,7 @@ import pandas as pd
 
 import tensorflow as tf
 
-from utils.config import Config
+from src.utils.config import Config
 
 
 class MNISTLoader(object):
@@ -135,7 +135,7 @@ def get_dta():
     csv_file = 'datasets/petfinder-mini/petfinder-mini.csv'
 
     tf.keras.utils.get_file('petfinder_mini.zip', dataset_url,
-                            extract=True, cache_dir='.')
+                            extract=True, cache_dir='')
     dataframe = pd.read_csv(csv_file)
     dataframe['target'] = np.where(dataframe['AdoptionSpeed'] == 4, 0., 1.)
 
