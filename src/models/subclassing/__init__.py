@@ -8,4 +8,6 @@
 @version        : 1.0
 @Desciption     :
 """
+from base import ModelBaseBuilder
+
 from mlp import MLPBuilder

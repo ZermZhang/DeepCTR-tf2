@@ -129,7 +129,7 @@ class CustomDataLoader(object):
         return dataset
 
 
-def get_dta():
+def get_data():
     # get the origin datas
     dataset_url = 'http://storage.googleapis.com/download.tensorflow.org/data/petfinder-mini.zip'
     csv_file = 'datasets/petfinder-mini/petfinder-mini.csv'
