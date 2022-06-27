@@ -139,3 +139,6 @@ dmypy.json
 cython_debug/
 
 .idea/
+
+examples/
+!examples/conf/
