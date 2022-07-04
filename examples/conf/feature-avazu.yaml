@@ -1,0 +1,152 @@
+id:
+  type: 'hashing'
+  config:
+    num_bins: 100000
+  emb_config:
+    input_dim: 100000
+    output_dim: 512
+  use_emb_layer: True
+
+hour:
+  type: 'numerical'
+  config:
+    num_bins: 1000
+  use_emb_layer: False
+
+C1:
+  type: 'hashing'
+  config:
+    num_bins: 128
+  emb_config:
+    input_dim: 128
+    output_dim: 16
+  use_emb_layer: True
+
+banner_pos:
+  type: 'numerical'
+  config:
+    num_bins: 64
+  use_emb_layer: False
+
+site_id:
+  type: 'hashing'
+  config:
+    num_bins: 32
+  emb_config:
+    input_dim: 32
+    output_dim: 8
+  use_emb_layer: True
+
+site_domain:
+  type: 'hashing'
+  config:
+    num_bins: 16
+  emb_config:
+    input_dim: 16
+    outpu_dim: 4
+  use_emb_layer: True
+
+site_category:
+  type: 'hashing'
+  config:
+    num_bins: 16
+  emb_config:
+    input_dim: 16
+    outpu_dim: 4
+  use_emb_layer: True
+
+app_id:
+  type: 'hashing'
+  config:
+    num_bins: 16
+  emb_config:
+    input_dim: 16
+    outpu_dim: 4
+  use_emb_layer: True
+
+app_domain:
+  type: 'hashing'
+  config:
+    num_bins: 16
+  emb_config:
+    input_dim: 16
+    outpu_dim: 4
+  use_emb_layer: True
+
+app_category:
+  type: 'hashing'
+  config:
+    num_bins: 16
+  emb_config:
+    input_dim: 16
+    outpu_dim: 4
+  use_emb_layer: True
+
+device_id:
+  type: 'hashing'
+  config:
+    num_bins: 16
+  emb_config:
+    input_dim: 16
+    outpu_dim: 4
+  use_emb_layer: True
+
+device_ip:
+  type: 'hashing'
+  config:
+    num_bins: 16
+  emb_config:
+    input_dim: 16
+    outpu_dim: 4
+  use_emb_layer: True
+
+device_model:
+  type: 'hashing'
+  config:
+    num_bins: 16
+  emb_config:
+    input_dim: 16
+    outpu_dim: 4
+  use_emb_layer: True
+
+device_type:
+  type: 'hashing'
+  config:
+    num_bins: 16
+  emb_config:
+    input_dim: 16
+    outpu_dim: 4
+  use_emb_layer: True
+
+device_conn_type:
+  type: 'hashing'
+  config:
+    num_bins: 16
+  emb_config:
+    input_dim: 16
+    outpu_dim: 4
+  use_emb_layer: True
+
+C14:
+  type: 'no-use'
+
+C15:
+  type: 'no-use'
+
+C16:
+  type: 'no-use'
+
+C17:
+  type: 'no-use'
+
+C18:
+  type: 'no-use'
+
+C19:
+  type: 'no-use'
+
+C20:
+  type: 'no-use'
+
+C21:
+  type: 'no-use'

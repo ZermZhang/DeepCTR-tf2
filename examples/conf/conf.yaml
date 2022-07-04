@@ -4,8 +4,8 @@
 
 # the configure info for datasets
 dataset:
-    train_path: D:/project/DeepCTR-tf2/datas/train/train_data.txt
-    test_path: ./datas/test/test_data.txt
+    train_path: ./datas/train
+    test_path: ./datas/test
     label_name: label
     type: csv
     batch_size: 32
