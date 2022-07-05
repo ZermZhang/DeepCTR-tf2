@@ -41,7 +41,16 @@ class Config(object):
     # the dataset config info from configure file
     @property
     def dataset_config(self):
-        return self.config.get('dataset', {})
+        base_dataset_config = self.config.get('dataset', {})
+        all_column_names, all_column_defaults, valid_feature_columns = self.get_column_default()
+        label_name = [key for key, value in self.feature_config.items() if value['type'] == 'label']
+
+        base_dataset_config['all_column_names'] = all_column_names
+        base_dataset_config['all_column_defaults'] = all_column_defaults
+        base_dataset_config['valid_feature_columns'] = valid_feature_columns
+        base_dataset_config['label_name'] = label_name
+
+        return base_dataset_config
 
     # the model config info from configure file
     @property
@@ -92,22 +101,25 @@ class Config(object):
         column_defaults = []
         valid_columns = []
 
-        def get_default_value(dtype):
-            if (not dtype) or (dtype == 'string'):
-                return ""
-            elif dtype == 'int':
-                return 0
-            elif dtype == 'float':
-                return 0.0
+        def get_default_value(identify):
+            if identify in ('hashing', 'sequence', 'pre-trained'):
+                return ''
+            elif identify in ('numerical', 'label'):
+                return 0.
+            elif identify == 'no-use':
+                return ''
             else:
-                raise Exception('dtype: {} is not supported'.format(dtype))
+                raise Exception(f'identify: {identify} is not supported.')
 
         for name, value in self.feature_config.items():
+            column_names.append(name)
+
             if value.get('default', None) is not None:
                 column_defaults.append(value['default'])
             else:
                 column_defaults.append(get_default_value(value['type']))
-            if value.get('params', None) is not None:
+
+            if value.get('type', None) is not None:
                 valid_columns.append(name)
 
         return column_names, column_defaults, valid_columns
@@ -134,7 +146,7 @@ if __name__ == "__main__":
     print(config_.config)
     train_config = config_.model_config
     print(train_config)
-    dataset_config = config_.dataset_config
-    print(dataset_config)
     features_config = config_.feature_config
     print(features_config)
+    dataset_config = config_.dataset_config
+    print(dataset_config)
