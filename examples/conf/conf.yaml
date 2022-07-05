@@ -4,15 +4,14 @@
 
 # the configure info for datasets
 dataset:
-    train_path: ./datas/train
+    train_path: ../../examples/datas/train.txt
     test_path: ./datas/test
-    label_name: label
     type: csv
-    batch_size: 32
-    epoches: 10
+    batch_size: 4
+    epoches: 1
     params:
         header: True
-        sep: ','
+        sep: '\t'
 
 # the configure info for model
 model:
