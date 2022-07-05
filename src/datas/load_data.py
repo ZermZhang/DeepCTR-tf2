@@ -88,18 +88,18 @@ class CustomDataLoaderNumeric(object):
 
 
 class CustomDataLoader(object):
-    def __init__(self, CONFIG, data_path, mode='train'):
-        self.dataset_config = CONFIG.dataset_config
-        self.schema = CONFIG.read_data_schema()
+    def __init__(self, config_, data_path, mode='train'):
+        self.dataset_config = config_.dataset_config
+        self.schema = config_.read_data_schema()
         self.mode = mode
         assert self.mode in {'train', 'test'}, ('the data type {} is not supported'.format(self.mode))
 
         self.data_path = data_path
 
-        self.params = CONFIG.read_data_params()
+        self.params = config_.read_data_params()
         self.label_name = self.dataset_config.get('label_name', None)
         assert self.label_name is not None
-        self.column_names, self.column_defaults, self.valid_columns = CONFIG.get_column_default()
+        self.column_names, self.column_defaults, self.valid_columns = config_.get_column_default()
 
     def _parse_csv(self):
         column_names = self.column_names
@@ -114,7 +114,7 @@ class CustomDataLoader(object):
 
         return parser
 
-    def input_fn(self, batch_size, epochs):
+    def input_fn(self, batch_size_, epochs_):
         dataset = tf.data.TextLineDataset(self.data_path).skip(1) if self.params['header'] is True else tf.data.TextLineDataset(
             self.data_path)
 
@@ -123,9 +123,9 @@ class CustomDataLoader(object):
 
         if self.mode == 'train':
             dataset = dataset.shuffle(buffer_size=10000, seed=123)
-            dataset = dataset.repeat(epochs)
+            dataset = dataset.repeat(epochs_)
 
-        dataset = dataset.prefetch(2 * batch_size).batch(batch_size)
+        dataset = dataset.prefetch(2 * batch_size_).batch(batch_size_)
         return dataset
 
 
@@ -165,6 +165,6 @@ if __name__ == "__main__":
     train_path = CONFIG.read_data_path('train')
     batch_size = CONFIG.read_data_batch_size()
     epochs = CONFIG.read_data_epochs()
-    data_load = CustomDataLoader(CONFIG, train_path).input_fn(batch_size=batch_size, epochs=epochs)
+    data_load = CustomDataLoader(CONFIG, train_path).input_fn(batch_size_=batch_size, epochs_=epochs)
 
     print(list(data_load.as_numpy_iterator())[0])

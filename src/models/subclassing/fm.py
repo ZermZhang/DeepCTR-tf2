@@ -46,8 +46,8 @@ def fm_runner(CONFIG, deep_columns):
     batch_size = CONFIG.read_data_batch_size()
     epochs = CONFIG.read_data_epochs()
     data_load = load_data.CustomDataLoader(CONFIG, train_path).input_fn(
-        batch_size=batch_size,
-        epochs=epochs
+        batch_size_=batch_size,
+        epochs_=epochs
     )
 
     model = FM(deep_columns)

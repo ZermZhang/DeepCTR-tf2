@@ -128,7 +128,7 @@ def tester(CONFIG, wide_columns={}, deep_columns={}):
     train_path = CONFIG.read_data_path('train')
     batch_size = CONFIG.read_data_batch_size()
     epochs = CONFIG.read_data_epochs()
-    data_load = load_data.CustomDataLoader(CONFIG, train_path).input_fn(batch_size=batch_size, epochs=epochs)
+    data_load = load_data.CustomDataLoader(CONFIG, train_path).input_fn(batch_size_=batch_size, epochs_=epochs)
 
     # training
     model.compile(optimizer='SGD', loss='mean_squared_error', metrics=['mean_absolute_error'], run_eagerly=True)
@@ -143,7 +143,7 @@ def linear_runner(CONFIG, wide_columns={}, deep_columns={}):
     train_path = CONFIG.read_data_path('train')
     batch_size = CONFIG.read_data_batch_size()
     epochs = CONFIG.read_data_epochs()
-    data_load = load_data.CustomDataLoader(CONFIG, train_path).input_fn(batch_size=batch_size, epochs=epochs)
+    data_load = load_data.CustomDataLoader(CONFIG, train_path).input_fn(batch_size_=batch_size, epochs_=epochs)
 
     model = Linear(deep_columns.values())
     optimizer = tf.keras.optimizers.SGD(learning_rate=0.01)

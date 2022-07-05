@@ -1,112 +1,153 @@
-Type:
-    type: 'hashing'
-    config:
-      num_bins: 20
-    emb_config:
-      input_dim: 16
-      output_dim: 8
-    use_emb_layer: True
-Age:
-    type: 'hashing'
-    config:
-      num_bins: 20
-    emb_config:
-      input_dim: 16
-      output_dim: 8
-    use_emb_layer: True
-Breed1:
-    type: 'hashing'
-    config:
-      num_bins: 20
-    emb_config:
-      input_dim: 16
-      output_dim: 8
-    use_emb_layer: True
-Gender:
-    type: 'hashing'
-    config:
-      num_bins: 20
-    emb_config:
-      input_dim: 16
-      output_dim: 8
-    use_emb_layer: True
-Color1:
-    type: 'hashing'
-    config:
-      num_bins: 20
-    emb_config:
-      input_dim: 16
-      output_dim: 8
-    use_emb_layer: True
-Color2:
-    type: 'hashing'
-    config:
-      num_bins: 20
-    emb_config:
-      input_dim: 16
-      output_dim: 8
-    use_emb_layer: True
-MaturitySize:
-    type: 'hashing'
-    config:
-      num_bins: 20
-    emb_config:
-      input_dim: 16
-      output_dim: 8
-    use_emb_layer: True
-FurLength:
-    type: 'hashing'
-    config:
-      num_bins: 20
-    emb_config:
-      input_dim: 16
-      output_dim: 8
-    use_emb_layer: True
-Vaccinated:
-    type: 'hashing'
-    config:
-      num_bins: 20
-    emb_config:
-      input_dim: 16
-      output_dim: 8
-    use_emb_layer: True
-Sterilized:
-    type: 'hashing'
-    config:
-      num_bins: 20
-    emb_config:
-      input_dim: 16
-      output_dim: 8
-    use_emb_layer: True
-Health:
-    type: 'hashing'
-    config:
-      num_bins: 20
-    emb_config:
-      input_dim: 16
-      output_dim: 8
-    use_emb_layer: True
-Fee:
-    type: 'hashing'
-    config:
-      num_bins: 20
-    emb_config:
-      input_dim: 16
-      output_dim: 8
-    use_emb_layer: True
-PhotoAmt:
-    type: 'hashing'
-    config:
-      num_bins: 20
-    emb_config:
-      input_dim: 16
-      output_dim: 8
-    use_emb_layer: True
-target:
-    type: 'hashing'
-    config:
-      num_bins: 20
-    emb_config:
-      input_dim: 16
-      output_dim: 8
-    use_emb_layer: True
+label:
+  type: 'label'
+user_id:
+  type: 'hashing'
+  config:
+    num_bins: 10000
+  emb_config:
+    input_dim: 10000
+    output_dim: 64
+  use_emb_layer: True
+
+click_cnt:
+  type: 'no-use'
+
+click_rate:
+  type: 'no-use'
+
+avg_price:
+  type: 'hashing'
+  config:
+    num_bins: 200
+  emb_config:
+    input_dim: 200
+    output_dim: 32
+  use_emb_layer: True
+
+query_id:
+  type: 'hashing'
+  config:
+    num_bins: 5000
+  emb_config:
+    input_dim: 5000
+    output_dim: 32
+  use_emb_layer: True
+
+query_type:
+  type: 'hashing'
+  config:
+    num_bins: 1000
+  emb_config:
+    input_dim: 1000
+    output_dim: 16
+  use_emb_layer: True
+
+query_cnt:
+  type: 'no-use'
+
+query_click_cnt:
+  type: 'no-use'
+
+item_id:
+  type: 'hashing'
+  config:
+    num_bins: 10000
+  emb_config:
+    input_dim: 10000
+    output_dim: 64
+  use_emb_layer: True
+
+item_type:
+  type: 'hashing'
+  config:
+    num_bins: 1000
+  emb_config:
+    input_dim: 1000
+    output_dim: 32
+  use_emb_layer: True
+
+item_sale_cnt:
+  type: 'no-use'
+
+item_recall_type:
+  type: 'no-use'
+
+item_expose_cnt:
+  type: 'no-use'
+
+item_click_rate:
+  type: 'no-use'
+
+delivery_duration:
+  type: 'hashing'
+  config:
+    num_bins: 1000
+  emb_config:
+    input_dim: 1000
+    output_dim: 32
+  use_emb_layer: True
+
+delivery_distance:
+  type: 'hashing'
+  config:
+    num_bins: 3000
+  emb_config:
+    input_dim: 30000
+    output_dim: 32
+  use_emb_layer: True
+
+delivery_fee:
+  type: 'hashing'
+  config:
+    num_bins: 1000
+  emb_config:
+    input_dim: 1000
+    output_dim: 32
+  use_emb_layer: True
+
+user_geo_hash5:
+  type: 'no-use'
+
+user_geo_hash6:
+  type: 'no-use'
+
+item_geo_hash5:
+  type: 'no-use'
+
+item_geo_hash6:
+  type: 'no-use'
+
+city_id:
+  type: 'hashing'
+  config:
+    num_bins: 1000
+  emb_config:
+    input_dim: 1000
+    output_dim: 16
+  use_emb_layer: True
+
+user_geo_hash6_click_cnt:
+  type: 'no-use'
+
+geo_hash_cnt1:
+  type: 'no-use'
+
+geo_hash_cnt2:
+  type: 'no-use'
+
+geo_hash_cnt3:
+  type: 'no-use'
+
+geo_hash_sample:
+  type: 'no-use'
+
+history_item_id_clicked:
+  type: 'sequence'
+  base_col: 'item_id'
+
+history_item_type_clicked:
+  type: 'sequence'
+  base_col: 'item_type'
+
+history_item_geohash_clicked:
+  type: 'no-use'

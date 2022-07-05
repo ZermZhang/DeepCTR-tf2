@@ -29,8 +29,8 @@ class Config(object):
         config_files = os.listdir(config_path)
         if 'conf.yaml' not in config_files:
             raise Exception("{} not existed!".format('conf.yaml'))
-        if 'feature-old.yaml' not in config_files:
-            raise Exception("{} not existed!".format('feature-old.yaml'))
+        if 'feature.yaml' not in config_files:
+            raise Exception("{} not existed!".format('feature.yaml'))
 
     @staticmethod
     def load(config_path):
@@ -130,9 +130,11 @@ class Config(object):
 
 if __name__ == "__main__":
 
-    config_ = Config('./conf/')
+    config_ = Config('../examples/conf/')
     print(config_.config)
-    CONFIG_TRAIN = config_.model_config
-    print(CONFIG_TRAIN)
+    train_config = config_.model_config
+    print(train_config)
+    dataset_config = config_.dataset_config
+    print(dataset_config)
     features_config = config_.feature_config
     print(features_config)
