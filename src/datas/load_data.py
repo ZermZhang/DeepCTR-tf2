@@ -61,8 +61,8 @@ class RnnDataLoader(object):
 
 # the data loader for all numeric data
 class CustomDataLoaderNumeric(object):
-    def __init__(self, CONFIG):
-        self.dataset_config = CONFIG.dataset_config
+    def __init__(self, config_):
+        self.dataset_config = config_.dataset_config
         self.train_path = self.dataset_config.get('train_path', None)
         self.test_path = self.dataset_config.get('test_path', None)
         assert self.train_path is not None and self.test_path is not None
@@ -85,48 +85,6 @@ class CustomDataLoaderNumeric(object):
     def get_batch(self, batch_size):
         index = np.random.randint(0, self.num_train_data, batch_size)
         return np.array(self.train_data)[index, :], np.array(self.train_label)[index, :]
-
-
-class CustomDataLoader(object):
-    def __init__(self, config_, data_path, mode='train'):
-        self.dataset_config = config_.dataset_config
-        self.schema = config_.read_data_schema()
-        self.mode = mode
-        assert self.mode in {'train', 'test'}, ('the data type {} is not supported'.format(self.mode))
-
-        self.data_path = data_path
-
-        self.params = config_.read_data_params()
-        self.label_name = self.dataset_config.get('label_name', None)
-        assert self.label_name is not None
-        self.column_names, self.column_defaults, self.valid_columns = config_.get_column_default()
-
-    def _parse_csv(self):
-        column_names = self.column_names
-        column_defaults = self.column_defaults
-        field_delim = self.params['sep']
-
-        def parser(value):
-            columns = tf.io.decode_csv(value, record_defaults=column_defaults, field_delim=field_delim)
-            features = {key: value for key, value in dict(zip(column_names, columns)).items() if key in self.valid_columns}
-            label = features.pop(self.label_name)
-            return features, label
-
-        return parser
-
-    def input_fn(self, batch_size_, epochs_):
-        dataset = tf.data.TextLineDataset(self.data_path).skip(1) if self.params['header'] is True else tf.data.TextLineDataset(
-            self.data_path)
-
-        # parse the csv data
-        dataset = dataset.map(self._parse_csv())
-
-        if self.mode == 'train':
-            dataset = dataset.shuffle(buffer_size=10000, seed=123)
-            dataset = dataset.repeat(epochs_)
-
-        dataset = dataset.prefetch(2 * batch_size_).batch(batch_size_)
-        return dataset
 
 
 def get_data():
@@ -160,11 +118,63 @@ def get_data():
     return train_ds
 
 
+class CustomDataLoader(object):
+    def __init__(self, config_, mode='train'):
+        self.dataset_config = config_.dataset_config
+
+        # 根据具体的mode，处理需要使用到的数据
+        self.mode = mode
+        assert self.mode in {'train', 'test'}, ('the data type {} is not supported'.format(self.mode))
+        self.data_path = self.dataset_config[f'{self.mode}_path']
+        self.params = config_.read_data_params()
+
+        # 针对数据的schema和default信息进行处理
+        self.label_name = self.dataset_config['label_name']
+        assert self.label_name is not None, f'the None label is not supported.'
+        self.trainable_features = self.dataset_config['valid_feature_columns']
+        self.sequence_columns = self.dataset_config['sequence_columns']
+
+        # 读取数据的时候需要的一些配置参数
+        self.field_delim = self.params['sep']
+        self.all_column_defaults = self.dataset_config['all_column_defaults']
+        self.all_column_names = self.dataset_config['all_column_names']
+
+    def _parse_csv(self):
+
+        def parser(value):
+            columns = tf.io.decode_csv(value, record_defaults=self.all_column_defaults,
+                                       field_delim='\t')
+            features = {key: value for key, value in dict(zip(self.all_column_names, columns)).items()
+                        if key in self.trainable_features}
+            for feature_name in self.sequence_columns:
+                split_value = tf.strings.split(features[feature_name], ',')
+                features[feature_name] = split_value
+
+            label = features.pop(self.label_name)
+            return features, label
+
+        return parser
+
+    def input_fn(self, batch_size_, epochs_):
+        dataset = tf.data.TextLineDataset(self.data_path).skip(1) \
+            if self.params['header'] is True else tf.data.TextLineDataset(self.data_path)
+
+        # parse the csv data
+        dataset = dataset.map(self._parse_csv())
+
+        if self.mode == 'train':
+            dataset = dataset.shuffle(buffer_size=10000, seed=123)
+            dataset = dataset.repeat(epochs_)
+
+        dataset = dataset.prefetch(2 * batch_size_).batch(batch_size_)
+        return dataset
+
+
 if __name__ == "__main__":
-    CONFIG = Config('./conf/')
+    CONFIG = Config('../examples/conf/')
     train_path = CONFIG.read_data_path('train')
     batch_size = CONFIG.read_data_batch_size()
     epochs = CONFIG.read_data_epochs()
-    data_load = CustomDataLoader(CONFIG, train_path).input_fn(batch_size_=batch_size, epochs_=epochs)
+    data_load = CustomDataLoader(CONFIG).input_fn(batch_size_=batch_size, epochs_=epochs)
 
     print(list(data_load.as_numpy_iterator())[0])

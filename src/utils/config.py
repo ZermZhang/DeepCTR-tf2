@@ -38,17 +38,50 @@ class Config(object):
             config = yaml.safe_load(f)
         return config
 
+    def get_column_default(self):
+        column_names = []
+        column_defaults = []
+        valid_columns = []
+        sequence_columns = []
+
+        def get_default_value(identify):
+            if identify in ('hashing', 'sequence', 'pre-trained'):
+                return ''
+            elif identify in ('numerical', 'label'):
+                return 0.
+            elif identify == 'no-use':
+                return ''
+            else:
+                raise Exception(f'identify: {identify} is not supported.')
+
+        for name, value in self.feature_config.items():
+            column_names.append(name)
+
+            if value.get('default', None) is not None:
+                column_defaults.append(value['default'])
+            else:
+                column_defaults.append(get_default_value(value['type']))
+
+            if value.get('type', None) is not None:
+                valid_columns.append(name)
+
+            if value.get('type', None) == 'sequence':
+                sequence_columns.append(name)
+
+        return column_names, column_defaults, valid_columns, sequence_columns
+
     # the dataset config info from configure file
     @property
     def dataset_config(self):
         base_dataset_config = self.config.get('dataset', {})
-        all_column_names, all_column_defaults, valid_feature_columns = self.get_column_default()
-        label_name = [key for key, value in self.feature_config.items() if value['type'] == 'label']
+        all_column_names, all_column_defaults, valid_feature_columns, sequence_columns = self.get_column_default()
+        label_name = [key for key, value in self.feature_config.items() if value['type'] == 'label'][0]
 
         base_dataset_config['all_column_names'] = all_column_names
         base_dataset_config['all_column_defaults'] = all_column_defaults
         base_dataset_config['valid_feature_columns'] = valid_feature_columns
         base_dataset_config['label_name'] = label_name
+        base_dataset_config['sequence_columns'] = sequence_columns
 
         return base_dataset_config
 
@@ -95,34 +128,6 @@ class Config(object):
     def read_data_schema(self):
         schema = list(self.feature_config.keys())
         return schema
-
-    def get_column_default(self):
-        column_names = []
-        column_defaults = []
-        valid_columns = []
-
-        def get_default_value(identify):
-            if identify in ('hashing', 'sequence', 'pre-trained'):
-                return ''
-            elif identify in ('numerical', 'label'):
-                return 0.
-            elif identify == 'no-use':
-                return ''
-            else:
-                raise Exception(f'identify: {identify} is not supported.')
-
-        for name, value in self.feature_config.items():
-            column_names.append(name)
-
-            if value.get('default', None) is not None:
-                column_defaults.append(value['default'])
-            else:
-                column_defaults.append(get_default_value(value['type']))
-
-            if value.get('type', None) is not None:
-                valid_columns.append(name)
-
-        return column_names, column_defaults, valid_columns
 
     def get_continuous_features_config(self):
         return self.feature_config.get('continuous_features', None)
