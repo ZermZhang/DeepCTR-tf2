@@ -100,28 +100,28 @@ class Config(object):
 
     # the detail info for data config
     def read_data_path(self, mode='train'):
-        dataset_config = self.dataset_config
+        dataset_config_ = self.dataset_config
         if mode == 'train':
-            data_path = dataset_config.get('train_path', '')
+            data_path = dataset_config_.get('train_path', '')
         elif mode == 'test':
-            data_path = dataset_config.get('test_path', '')
+            data_path = dataset_config_.get('test_path', '')
         else:
             raise ("the mode {} is not supported".format(mode))
         return data_path
 
     def read_data_params(self):
-        dataset_config = self.dataset_config
-        params = dataset_config.get('params', {'head': True, 'sep': ','})
+        dataset_config_ = self.dataset_config
+        params = dataset_config_.get('params', {'head': True, 'sep': ','})
         return params
 
     def read_data_batch_size(self):
-        dataset_config = self.dataset_config
-        batch_size = dataset_config.get('batch_size', 128)
+        dataset_config_ = self.dataset_config
+        batch_size = dataset_config_.get('batch_size', 128)
         return batch_size
 
     def read_data_epochs(self):
-        dataset_config = self.dataset_config
-        epochs = dataset_config.get('epochs', 10)
+        dataset_config_ = self.dataset_config
+        epochs = dataset_config_.get('epochs', 10)
         return epochs
 
     # parser the feature column info
