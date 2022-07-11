@@ -98,6 +98,15 @@ class Config(object):
     def wide_model_config(self):
         return self.model_config.get('wide', {})
 
+    @property
+    def preprocessing_config(self):
+        features_config_ = self.feature_config
+        preprocessing_config = {}
+        for feature_name, config in features_config_.items():
+            if config['type'] not in ('label', 'no-use'):
+                preprocessing_config.update({feature_name: config})
+        return preprocessing_config
+
     # the detail info for data config
     def read_data_path(self, mode='train'):
         dataset_config_ = self.dataset_config
@@ -155,3 +164,6 @@ if __name__ == "__main__":
     print(features_config)
     dataset_config = config_.dataset_config
     print(dataset_config)
+    preprocessing_config = config_.preprocessing_config
+    print(len(preprocessing_config))
+    print(preprocessing_config)
