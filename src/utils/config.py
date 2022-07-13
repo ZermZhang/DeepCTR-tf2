@@ -15,11 +15,11 @@ import yaml
 
 class Config(object):
     def __init__(self, config_path):
-        abs_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), config_path)
-        if not os.path.exists(abs_path):
-            raise Exception("{config_path} not exists".format(config_path=abs_path))
+
+        if not os.path.exists(config_path):
+            raise Exception("{config_path} not exists".format(config_path=config_path))
         else:
-            self.config_path = abs_path
+            self.config_path = config_path
             self.__conf_path_check(self.config_path)
             self.config = self.load(os.path.join(self.config_path, 'conf.yaml'))
             self.feature_config = self.load(os.path.join(self.config_path, 'feature.yaml'))

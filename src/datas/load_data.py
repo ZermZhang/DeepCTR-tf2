@@ -119,13 +119,13 @@ def get_data():
 
 
 class CustomDataLoader(object):
-    def __init__(self, config_, mode='train'):
+    def __init__(self, config_, mode='train', data_path=None):
         self.dataset_config = config_.dataset_config
 
         # 根据具体的mode，处理需要使用到的数据
         self.mode = mode
         assert self.mode in {'train', 'test'}, ('the data type {} is not supported'.format(self.mode))
-        self.data_path = self.dataset_config[f'{self.mode}_path']
+        self.data_path = self.dataset_config[f'{self.mode}_path'] if data_path is None else data_path
         self.params = config_.read_data_params()
 
         # 针对数据的schema和default信息进行处理
@@ -168,7 +168,6 @@ class CustomDataLoader(object):
 
         dataset = dataset.prefetch(2 * batch_size_).batch(batch_size_)
         return dataset
-
 
 if __name__ == "__main__":
     CONFIG = Config('../examples/conf/')
