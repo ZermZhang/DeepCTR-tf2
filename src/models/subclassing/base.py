@@ -47,6 +47,37 @@ class ModelBaseBuilder(tf.keras.Model):
                 self.emb_layers[feature_name] = feature_builder.emb_layer
                 self.all_inputs[feature_name] = feature_builder.inputs
 
+    def feature_encoder(self, inputs: dict):
+        """
+        将输入特征从原始特征格式编码为embedding格式，可以根据自己的需要进行重写
+        inputs: 调用Model的时候输入的特征，常见格式为dict， {feature_name_1: feature_val_1, feature_name_2: feature_val_2, ···}
+        输出：根据feature_config生成的embedding特征
+        """
+        encoded_features = []
+        for feature_name, feature_config in self.preprocessing_config.items():
+            if not self.emb_layers[feature_name]:
+                encoded_features.append(tf.expand_dims(
+                    self.encoder_layers[feature_name](inputs[feature_name]),
+                    axis=1
+                ))
+            else:
+                embedding = self.emb_layers[feature_name](
+                    self.encoder_layers[feature_name](inputs[feature_name])
+                )
+                if feature_config['type'] == 'sequence':
+                    embedding = tf.keras.layers.Reshape(
+                        target_shape=(1, feature_config.get('len', 10) *
+                                      self.emb_layers[feature_name].output_dim)
+                    )(embedding)
+                else:
+                    pass
+
+                encoded_features.append(embedding)
+        return encoded_features
+
+    def call(self, inputs: dict):
+        return 0
+
     def build_graph(self):
         return tf.keras.models.Model(
             inputs=self.all_inputs,

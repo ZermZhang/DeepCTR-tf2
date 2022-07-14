@@ -36,27 +36,7 @@ class MLPBuilder(ModelBaseBuilder):
         self.output_layer = tf.keras.layers.Dense(1)
 
     def call(self, inputs):
-        encoded_features = []
-        for feature_name, feature_config in self.preprocessing_config.items():
-            if not self.emb_layers[feature_name]:
-                encoded_features.append(tf.expand_dims(
-                    self.encoder_layers[feature_name](inputs[feature_name]),
-                    axis=1
-                ))
-            else:
-                embedding = self.emb_layers[feature_name](
-                    self.encoder_layers[feature_name](inputs[feature_name])
-                )
-                if feature_config['type'] == 'sequence':
-                    embedding = tf.keras.layers.Reshape(
-                        target_shape=(1, feature_config.get('len', 10) *
-                                      self.emb_layers[feature_name].output_dim)
-                    )(embedding)
-                else:
-                    pass
-
-                encoded_features.append(embedding)
-
+        encoded_features = self.feature_encoder(inputs)
         x = tf.keras.layers.concatenate(encoded_features)
         x = self.dense_layer(x)
         x = self.dropout_layer(x)
