@@ -145,10 +145,12 @@ geo_hash_sample:
 history_item_id_clicked:
   type: 'sequence'
   base_col: 'item_id'
+  len: 10
 
 history_item_type_clicked:
   type: 'sequence'
   base_col: 'item_type'
+  len: 10
 
 history_item_geohash_clicked:
   type: 'no-use'
