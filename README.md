@@ -15,3 +15,18 @@
     - conf：配置文件
     - datas：训练、测试数据
   
+## 测试用例
+* 调用说明：
+```python
+import tensorflow as tf
+
+from src.utils.config import Config
+from src.models.subclassing import mlp
+
+config_ = Config('../examples/conf/')
+
+mlp_model = mlp.MLPBuilder(config=config_)
+tf.keras.utils.plot_model(mlp_model.build_graph(), show_shapes=True)
+```
+* 输出结果：
+![img.png](docs/pics/img.png)
