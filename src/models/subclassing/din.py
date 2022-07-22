@@ -11,11 +11,15 @@
 import tensorflow as tf
 
 from . import ModelBaseBuilder
+from src.utils.config import Config
 
 
-class DIN(ModelBaseBuilder):
-    def __init__(self, config, *args, **kwargs):
-        super(DIN, self).__init__(*args, **kwargs)
+class DINBuilder(ModelBaseBuilder):
+    def __init__(self, config_: Config, *args, **kwargs):
+        super(DINBuilder, self).__init__(config_, *args, **kwargs)
+
+        self.sequence_feature = [key for key, val in config_.feature_config.items() if val['type'] == 'sequence']
+
         self.atten_layer = tf.keras.layers.Attention()
         self.dense_layer_1 = tf.keras.layers.Dense(
             units=64, activation='relu'
@@ -29,3 +33,21 @@ class DIN(ModelBaseBuilder):
         self.output_layer = tf.keras.layers.Dense(
             units=1
         )
+
+    def feature_encoder(self, inputs: dict):
+        encoded_features = {}
+        for feature_name, feature_config in self.preprocessing_config.items():
+            if not self.emb_layers[feature_name]:
+                encoded_features[feature_name] = tf.expand_dims(
+                    self.encoder_layers[feature_name](inputs[feature_name]),
+                    axis=1
+                )
+            else:
+                embedding = self.emb_layers[feature_name](
+                    self.encoder_layers[feature_name](inputs[feature_name])
+                )
+                encoded_features[feature_name] = embedding
+        return encoded_features
+
+    def call(self, inputs):
+        return 0

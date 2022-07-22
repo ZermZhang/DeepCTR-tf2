@@ -91,6 +91,10 @@ class Config(object):
         return self.config.get('model', {})
 
     @property
+    def train_config(self):
+        return self.config.get('train', {})
+
+    @property
     def deep_model_config(self):
         return self.model_config.get('deep', {})
 

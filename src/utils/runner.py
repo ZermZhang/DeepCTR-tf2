@@ -11,6 +11,58 @@
 
 import tensorflow as tf
 
+from src.utils.config import Config
+from src.custom_utils.custom_losses import get
+
+
+class Runner:
+    def __init__(self, config: Config, model):
+        self.model = model
+
+        # train和eval等过程的相关配置信息
+        self.train_config = config.train_config
+
+        self.optimizer_params = self.train_config.get('optimizer_params', {'learning_rate': 0.001})
+        self.optimizer = tf.keras.optimizers.get(self.train_config.get('optimizer', 'Adagrad'))(self.optimizer_params)
+
+        self.loss = get(self.train_config.get('loss', None))
+
+        self.metrics = tf.keras.metrics.AUC(num_thresholds=256)
+
+    @tf.function
+    def train_step(self, batch_features, batch_labels):
+        total_loss = 0.
+
+        with tf.GradientTape() as tape:
+            batch_preds = self.model(batch_features)
+            total_loss += self.loss(batch_labels, batch_preds)
+        avg_loss = (total_loss / int(batch_labels.shape(0)))
+
+        trainable_variables = self.model.trainable_variables
+        gradients = tape.gradient(total_loss, trainable_variables)
+
+        self.optimizer.apply_gradient(total_loss, gradients)
+        return total_loss, avg_loss
+
+    @tf.function
+    def eval_step(self, batch_features, batch_labels):
+        batch_preds = self.model(batch_features, training=False)
+        self.metrics.update_state(batch_labels, batch_preds)
+
+    @tf.function
+    def run(self, data_ds, steps=50, training=True):
+        for (batch_id, (features, labels)) in enumerate(data_ds):
+            if training:
+                batch_total_loss, batch_avg_loss = self.train_step(features, labels)
+                if batch_id >= steps:
+                    print(f"the batch {batch_id} total loss: {batch_total_loss}; batch_avg_loss: {batch_avg_loss}")
+                    break
+            else:
+                self.eval_step(features, labels)
+                if batch_id >= steps:
+                    print(f"the metrics: {self.metrics.result()}")
+                    break
+
 
 # TODO: too many inputs for wrapper.
 # TODO: The ideal wrapper's inputs should be the must inputs, likes optimizer, epochs, loss_func···

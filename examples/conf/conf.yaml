@@ -15,16 +15,7 @@ dataset:
 
 # the configure info for model
 model:
-    num_episodes: 500
-    num_exploration_episodes: 100
-    max_len_episode: 1000
-    seq_length: 40
     batch_size: 32
-    learning_rate: 0.001
-    gamma: 1.0
-    initial_epsilon: 1.0
-    final_epsilon: 0.01
-    optimizer: Adam
     classes: 2
     deep:
         units: [24, 24]
@@ -32,3 +23,12 @@ model:
 
     wide:
         activation: sigmoid
+
+# the configure info for training processing
+train:
+    optimizer: Adagrad
+    optimizer_params:
+        learning_rate: 0.001
+        initial_accumulator_value: 0.1
+        epsilon: 1e-07
+    loss: reduce_sum_sparse_categorical_crossentropy
