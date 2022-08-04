@@ -146,9 +146,13 @@ class CustomDataLoader(object):
                                        field_delim='\t')
             features = {key: value for key, value in dict(zip(self.all_column_names, columns)).items()
                         if key in self.trainable_features}
-            for feature_name in self.sequence_columns:
-                split_value = tf.strings.split(features[feature_name], ',')
-                features[feature_name] = split_value
+
+            for feature_name in self.trainable_features:
+                if feature_name in self.sequence_columns:
+                    split_values = tf.strings.split(features[feature_name], ',')
+                    features[feature_name] = split_values
+                else:
+                    features[feature_name] = tf.expand_dims(features[feature_name], axis=-1)
 
             label = features.pop(self.label_name)
             return features, label
