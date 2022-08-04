@@ -169,6 +169,7 @@ class CustomDataLoader(object):
         dataset = dataset.prefetch(2 * batch_size_).batch(batch_size_)
         return dataset
 
+
 if __name__ == "__main__":
     CONFIG = Config('../examples/conf/')
     train_path = CONFIG.read_data_path('train')
