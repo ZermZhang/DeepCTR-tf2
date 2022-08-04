@@ -1,3 +1,5 @@
+# avazu数据集配置
+
 id:
   type: 'hashing'
   config:
