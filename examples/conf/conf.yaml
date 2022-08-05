@@ -28,7 +28,7 @@ model:
 train:
     optimizer: Adagrad
     optimizer_params:
-        learning_rate: 0.001
+        learning_rate: 0.005
         initial_accumulator_value: 0.1
         epsilon: 1e-07
     loss: reduce_sum_sparse_categorical_crossentropy

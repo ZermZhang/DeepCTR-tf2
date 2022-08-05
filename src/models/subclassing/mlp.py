@@ -38,6 +38,7 @@ class MLPBuilder(ModelBaseBuilder):
     def call(self, inputs):
         encoded_features = self.feature_encoder(inputs)
         x = tf.keras.layers.concatenate(encoded_features)
+        x = tf.squeeze(x, axis=1)
         x = self.dense_layer(x)
         x = self.dropout_layer(x)
         x = self.output_layer(x)

@@ -22,35 +22,35 @@ class Runner:
         # train和eval等过程的相关配置信息
         self.train_config = config.train_config
 
-        self.optimizer_params = self.train_config.get('optimizer_params', {'learning_rate': 0.001})
-        self.optimizer = tf.keras.optimizers.get(self.train_config.get('optimizer', 'Adagrad'))(self.optimizer_params)
+        self.optimizer_params = self.train_config.get('optimizer_params', {'learning_rate': 0.005})
+        self.optimizer = tf.keras.optimizers.Adagrad(**self.optimizer_params)
 
         self.loss = get(self.train_config.get('loss', None))
 
         self.metrics = tf.keras.metrics.AUC(num_thresholds=256)
 
-    @tf.function
     def train_step(self, batch_features, batch_labels):
         total_loss = 0.
 
         with tf.GradientTape() as tape:
             batch_preds = self.model(batch_features)
             total_loss += self.loss(batch_labels, batch_preds)
-        avg_loss = (total_loss / int(batch_labels.shape(0)))
+        avg_loss = (total_loss / int(batch_labels.shape[0]))
 
         trainable_variables = self.model.trainable_variables
         gradients = tape.gradient(total_loss, trainable_variables)
 
-        self.optimizer.apply_gradient(total_loss, gradients)
+        self.optimizer.apply_gradients(grads_and_vars=zip(gradients, trainable_variables))
         return total_loss, avg_loss
 
-    @tf.function
     def eval_step(self, batch_features, batch_labels):
         batch_preds = self.model(batch_features, training=False)
+        batch_preds = tf.math.sigmoid(batch_preds)
         self.metrics.update_state(batch_labels, batch_preds)
 
     @tf.function
     def run(self, data_ds, steps=50, training=True):
+        self.metrics.reset_states()
         for (batch_id, (features, labels)) in enumerate(data_ds):
             if training:
                 batch_total_loss, batch_avg_loss = self.train_step(features, labels)
