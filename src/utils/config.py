@@ -75,6 +75,13 @@ class Config(object):
         return self.config.get('train', {})
 
     @property
+    def run_config(self):
+        """
+        对模型执行train和eval过程中需要使用的一些配置信息
+        """
+        return self.config.get('run', {})
+
+    @property
     def preprocessing_config(self):
         """
         preprocessing_layer的相关配置，包括preprocessing_layer和embedding_layer

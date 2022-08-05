@@ -32,3 +32,8 @@ train:
         initial_accumulator_value: 0.1
         epsilon: 1e-07
     loss: reduce_sum_sparse_categorical_crossentropy
+
+run:
+    max_steps: 20000
+    eval_steps: 1000
+    eval_gap: 5000
