@@ -28,6 +28,9 @@ class Runner:
         self.metrics = tf.keras.metrics.AUC(num_thresholds=256)
         self.loss = get(config.train_config.get('loss', 'reduce_sum_sparse_categorical_crossentropy'))
 
+        # run过程中的配置信息
+        self.run_config = config.run_config
+
     @tf.function
     def train_step(self, batch_features, batch_labels):
 
@@ -60,6 +63,20 @@ class Runner:
                 if batch_id >= steps:
                     print(f"the metrics: {self.metrics.result()}")
                     break
+
+    def progress(self, train_data_loader, test_data_loader):
+        for epoch in range(self.run_config.get('epoches', 20)):
+            train_step = 0
+            for train_step in range(self.run_config.get('train_steps', 2000)):
+                [(train_features, train_labels)] = train_data_loader.take(1)
+                total_loss = self.train_step(train_features, train_labels)
+                if train_step % self.run_config.get('loss_steps', 1000):
+                    print(f'step {train_step} loss: [{total_loss}]')
+
+            for test_step in range(self.run_config.get('test_step', 2000)):
+                [(test_features, test_labels)] = test_data_loader.take(1)
+                self.eval_step(test_features, test_labels)
+            print(f'step {train_step} auc: [{self.metrics.result()}]')
 
 
 # TODO: too many inputs for wrapper.
